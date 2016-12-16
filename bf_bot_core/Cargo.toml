@@ -1,0 +1,6 @@
+[package]
+name = "bf_bot_core"
+version = "0.1.0"
+authors = ["Arjan Boschman <a.boschman@hotmail.com>"]
+
+[dependencies]

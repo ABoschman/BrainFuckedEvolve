@@ -1,0 +1,19 @@
+[root]
+name = "brain_fuck_joust"
+version = "0.1.0"
+dependencies = [
+ "bf_bot_compiler 0.1.0",
+ "bf_bot_core 0.1.0",
+]
+
+[[package]]
+name = "bf_bot_compiler"
+version = "0.1.0"
+dependencies = [
+ "bf_bot_core 0.1.0",
+]
+
+[[package]]
+name = "bf_bot_core"
+version = "0.1.0"
+

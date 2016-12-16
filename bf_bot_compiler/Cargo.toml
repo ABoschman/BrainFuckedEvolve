@@ -1,0 +1,9 @@
+[package]
+name = "bf_bot_compiler"
+version = "0.1.0"
+authors = ["Arjan Boschman <a.boschman@hotmail.com>"]
+
+[dependencies]
+
+[dependencies.bf_bot_core]
+path = "../bf_bot_core"
