@@ -1,9 +1,14 @@
+
+#![allow(unused_variables, unused_imports)]
+#![allow(dead_code)]
+
 use bot::Bot;
 use bot::Instruction;
 use game::bot_in_play::BotInPlay;
 use game::bot_in_play::Mutation;
 use game::bot_in_play::Polarity;
 use game::bot_in_play::StartingPos;
+
 
 #[derive(Debug)]
 pub struct Arena<'a> {
