@@ -54,19 +54,48 @@ fn check_bracket_mismatch(program: &str) -> Vec<Issue> {
 /// This lint rule checks for a few simple patterns:
 ///
 /// - A dot that immediatelly follows a non-whitespace comment character.
-/// - A dot that follows a body of comments including at least one non-whitespace character and precedes a body of comments followed by a line break or the program's end.
 ///
 fn check_unintended_dot(program: &str) -> Vec<Issue> {
-    let vec: Vec<Issue> = vec![];
-    for line in program.split("\n") {
-        println!("{}", line);
+    program.chars().skip(1)
+    .scan((State::FollowsNothing, program.chars().nth(0)), | &mut (ref follows, previous_char), current_char | {
+        let state = if is_valid_instruction(previous_char.unwrap()) { State::FollowsInstruction } else { State:: FollowsComment };
+        Some((state, current_char))
+    }).inspect(| a | {
+        println!("{:?}", a);
+    }).enumerate().filter(| &(index, (ref state, character)) | {
+        state == &State::FollowsComment && character == '.'
+    }).map(| (index, (state, character)) | {
+        Issue::new_unintentional_dot(CodeLocation{line:0,column:0})
+    }).collect::<Vec<_>>()
+}
+
+#[derive(Debug)]
+#[derive(PartialEq)]
+enum State {
+    FollowsNothing,
+    FollowsComment,
+    FollowsInstruction
+}
+
+//TODO: Move. Tests. Doc.
+fn is_valid_instruction(character: char) -> bool {
+    match character {
+        '<' => true,
+        '>' => true,
+        '+' => true,
+        '-' => true,
+        '[' => true,
+        ']' => true,
+        '.' => true,
+        _ => false,
     }
-    vec
 }
 
 fn check_comma(program: &str) -> Vec<Issue> {
     vec![]
 }
+
+//TODO: Right now I use chars(), I think this will result in unexpected behaviour if the input is not ascii.
 
 #[test]
 #[allow(non_snake_case)]
