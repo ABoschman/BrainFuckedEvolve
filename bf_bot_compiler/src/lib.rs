@@ -5,5 +5,5 @@
 //! Prettyfier that tries to format the code in an intellinent way using spacing and newlines.
 extern crate bf_bot_core;
 
-
 pub mod parser;
+pub mod linter;

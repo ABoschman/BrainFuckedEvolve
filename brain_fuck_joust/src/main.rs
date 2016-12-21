@@ -1,5 +1,4 @@
-#![allow(unused_variables)]
-#![allow(dead_code)]
+#![allow(dead_code, unused_variables)]
 
 extern crate bf_bot_core;
 extern crate bf_bot_compiler;
