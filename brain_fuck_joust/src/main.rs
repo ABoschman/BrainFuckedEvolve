@@ -5,13 +5,8 @@ extern crate bf_bot_compiler;
 
 use bf_bot_compiler::parser;
 use bf_bot_core::bot::Bot;
-use bf_bot_core::bot::Instruction;
-use bf_bot_core::workingtitle;
+use bf_bot_core::workingtitle::arena;
 use bf_bot_core::workingtitle::arena::Arena;
-use bf_bot_core::workingtitle::bot_in_play::BotInPlay;
-use bf_bot_core::workingtitle::bot_in_play::StartingPos;
-use bf_bot_core::workingtitle::bot_in_play::Polarity;
-use bf_bot_core::workingtitle::bot_in_play::Mutation;
 
 fn main() {
     // print!("Bot1 input string: ");
@@ -26,7 +21,7 @@ fn main() {
     println!("{:?} << Initial Tape", arena.get_tape());
     println!("Bot1: {:#?}", bot1);
     println!("Bot2: {:#?}", bot2);
-    game::determine_winner(&mut arena);
+    arena::determine_winner(&mut arena);
 }
 
 fn make_test_bot(code: String) -> Bot {

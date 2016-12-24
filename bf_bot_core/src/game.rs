@@ -52,18 +52,23 @@ impl GameResult {
 #[derive(Debug)]
 #[derive(PartialEq)]
 pub struct RoundParams {
-    tape_length: u8,
-    invert_polarity: bool,
+    pub tape_length: u32,
+    pub invert_polarity: bool,
+    pub max_steps: u32,
 }
 
 //===== Default rounds supplier, used for complete games:
 
-const MIN_TAPE_LENGTH: u8 = 10;
-const MAX_TAPE_LENGTH: u8 = 30;
+const MIN_TAPE_LENGTH: u32 = 10;
+const MAX_TAPE_LENGTH: u32 = 30;
+/// Max steps in a round for a complete game. 
+/// If an incomplete game is run for performance reasons, the max steps may be smaller than this value to save CPU time.
+/// However, if a smaller value than this is used, note that the result of the game may differ from reality.
+const COMPLETE_GAME_MAX_STEPS: u32 = 100_000;
 
 /// An iterator that returns all rounds in a complete game, covering all possible tape lengths and both polarities.
 pub struct AllRounds {
-    tape_length: u8,
+    tape_length: u32,
     invert_polarity: bool,
 }
 
@@ -76,7 +81,11 @@ impl AllRounds {
     }
 
     fn current_item(&self) -> RoundParams {
-        RoundParams { tape_length: self.tape_length, invert_polarity: self.invert_polarity }
+        RoundParams { 
+            tape_length: self.tape_length, 
+            invert_polarity: self.invert_polarity,
+            max_steps: COMPLETE_GAME_MAX_STEPS,
+        }
     }
 
     fn update_state(&mut self) {

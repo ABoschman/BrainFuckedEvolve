@@ -19,16 +19,16 @@ pub struct Arena<'a> {
 
 impl<'a> Arena<'a> {
 
-    pub fn new<'b>(bot1: &'b Bot, bot2: &'b Bot, length: usize, has_reversed_polarity: bool) -> Arena<'b>  {
+    pub fn new<'b>(bot1: &'b Bot, bot2: &'b Bot, length: u32, has_reversed_polarity: bool) -> Arena<'b>  {
         let polarity = if has_reversed_polarity { Polarity::Reversed } else { Polarity::Normal };
         Arena {
-            tape: Arena::make_tape(length),
+            tape: Arena::make_tape(length as usize),
             start_bot: BotInPlay::new(bot1, length as i32, StartingPos::Start, Polarity::Normal),
             end_bot: BotInPlay::new(bot2, length as i32, StartingPos::End, polarity),
         }
     }
 
-    fn step(&mut self) {
+    pub fn step(&mut self) {
         let optional_cell_mutation_1 = Arena::step_bot(&mut self.start_bot, &self.tape);
         let optional_cell_mutation_2 = Arena::step_bot(&mut self.end_bot, &self.tape);
         if let Some(mutation) = optional_cell_mutation_1 {
@@ -63,6 +63,7 @@ impl<'a> Arena<'a> {
 
 }
 
+#[deprecated]
 pub fn determine_winner(arena: &mut Arena) -> i32 {
     for i in 0..100_000 {
         arena.step();
