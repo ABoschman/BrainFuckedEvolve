@@ -15,19 +15,19 @@ pub struct BotInPlay<'a> {
     /// This doesn't just determine the initial value of the bot's position; it is also used to determine what the MoveBack and MoveForward instructions mean. 
     /// The bot that starts at the end of the tap will decrement its position on the tape upon MoveForward. 
     /// The other bot will increment its position when executing that instruction.
-    starting_pos: StartingPos,
+    orientation: Orientation,
     /// The polarity of the bot during this game. 
     polarity: Polarity,
 }
 
 impl<'a> BotInPlay<'a> {
 
-    pub fn new(bot: &Bot, length: i32, starting_pos: StartingPos, polarity: Polarity) -> BotInPlay {
+    pub fn new(bot: &Bot, length: i32, orientation: Orientation, polarity: Polarity) -> BotInPlay {
         BotInPlay {
             bot: bot,
-            pos: if starting_pos == StartingPos::Start { 0 } else { length - 1 },
+            pos: if orientation == Orientation::Normal { 0 } else { length - 1 },
             code_pointer: 0,
-            starting_pos: starting_pos,
+            orientation: orientation,
             polarity: polarity,
         }
     }
@@ -43,10 +43,10 @@ impl<'a> BotInPlay<'a> {
 
     pub fn execute_code(&mut self, current_cell_is_zero: bool) -> Option<Mutation> {
         match self.bot.get_program()[self.code_pointer] {
-            Instruction::MoveBack => {self.pos += direction_for_orientation(&self.starting_pos, -1); None},
-            Instruction::MoveForward => {self.pos += direction_for_orientation(&self.starting_pos, 1); None},
-            Instruction::Increment => Some(Mutation { index: self.pos as usize, addend: cell_mutation_for_polarity(&self.polarity, 1) }),
-            Instruction::Decrement => Some(Mutation { index: self.pos as usize, addend: cell_mutation_for_polarity(&self.polarity, -1) }),
+            Instruction::MoveBack => {self.pos += self.orientation.calc_movement_relative_to_tape(-1); None},
+            Instruction::MoveForward => {self.pos += self.orientation.calc_movement_relative_to_tape(1); None},
+            Instruction::Increment => Some(Mutation { index: self.pos as usize, addend: self.polarity.mutation_relative_to_tape(1) }),
+            Instruction::Decrement => Some(Mutation { index: self.pos as usize, addend: self.polarity.mutation_relative_to_tape(-1) }),
             Instruction::ConditionalGoToForward{target_pointer} => {
                 if current_cell_is_zero {
                     self.code_pointer = target_pointer;
@@ -76,12 +76,34 @@ impl<'a> BotInPlay<'a> {
     }
 }
 
-/// Which side of the tape the bot starts at. 
-/// This doesn't affect the gameplay from the bot's perspective, each bot may write their code as though they start at cell zero. 
+/// The orientation of a BotInPlay is determined by its starting position on the tape. 
+/// Orientation doesn't affect the gameplay from the bot's perspective, each bot may write their code as though they start at cell zero. 
 #[derive(Debug)]
 #[derive(PartialEq)]
-pub enum StartingPos {
-    Start, End,
+pub enum Orientation {
+    /// Bot starts off at the start of the tape. To advance forward means to move in the positive direction.
+    Normal,
+    /// Bot starts off at the end of the tape. To advance forward means to move in the negative direction.
+    Reversed,
+}
+
+impl Orientation {
+    /// Takes a desired movement relative to the Bot (i.e.: Forwards towards the enemy flag or backwards towards its own flag, 
+    /// not taking into account orientation on the tape) and makes it relative to the tape.
+    /// For the bot that started out at the start of the tape, the result will be the same. For the other bot, the result will be inverted.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bf_bot_core::workingtitle::bot_in_play::Orientation;
+    /// assert_eq!(Orientation::Normal.calc_movement_relative_to_tape(1), 1);
+    /// assert_eq!(Orientation::Normal.calc_movement_relative_to_tape(-1), -1);
+    /// assert_eq!(Orientation::Reversed.calc_movement_relative_to_tape(1), -1);
+    /// assert_eq!(Orientation::Reversed.calc_movement_relative_to_tape(-1), 1);
+    /// ```
+    pub fn calc_movement_relative_to_tape(&self, direction: i32) -> i32 {
+        if self == &Orientation::Normal { direction } else { -direction }
+    }
 }
 
 /// In half the matches, one of the bots will have its polarity reversed. 
@@ -93,6 +115,26 @@ pub enum Polarity {
     Normal, 
     /// Reversed polarity, aka Kettle. Decrement is interpreted as increasing the value of a cell, Increment as lowering it.
     Reversed,
+}
+
+impl Polarity {
+    /// Converts the intended cell mutation from the Bot's perspective to fit the tape's perspective, 
+    /// by adding consideration for the BotInPlay's polarity. 
+    /// Nothing changes if the BotInPlay has normal polarity, but BotInPlay's with reversed polarity will 
+    /// increment when they mean to decrement and vice versa.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bf_bot_core::workingtitle::bot_in_play::Polarity;
+    /// assert_eq!(Polarity::Normal.mutation_relative_to_tape(1), 1);
+    /// assert_eq!(Polarity::Normal.mutation_relative_to_tape(-1), -1);
+    /// assert_eq!(Polarity::Reversed.mutation_relative_to_tape(1), -1);
+    /// assert_eq!(Polarity::Reversed.mutation_relative_to_tape(-1), 1);
+    /// ```
+    pub fn mutation_relative_to_tape(&self, addend: i8) -> i8 {
+        if self == &Polarity::Normal { addend } else { -addend }
+    }
 }
 
 #[derive(Debug)]
@@ -113,15 +155,3 @@ impl Mutation {
         self.addend
     }
 }
-
-/// Takes a bot's orientation (i.e. its starting position) and the direction it wants to move in from the bot's perspective 
-/// (i.e. forward towards the enemy or back towards its own flag) and converts this into the direction from the perspective of the tape. 
-/// For the bot that started out at the start of the tape, the result will be the same. For the other bot, the result will be inverted.
-fn direction_for_orientation(orientation: &StartingPos, direction: i32) -> i32 {
-    if orientation == &StartingPos::Start { direction } else { -direction }
-}
-
-fn cell_mutation_for_polarity(polarity: &Polarity, addend: i8) -> i8 {
-    if polarity == &Polarity::Normal { addend } else { -addend }
-}
-

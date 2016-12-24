@@ -7,7 +7,7 @@ use bot::Instruction;
 use workingtitle::bot_in_play::BotInPlay;
 use workingtitle::bot_in_play::Mutation;
 use workingtitle::bot_in_play::Polarity;
-use workingtitle::bot_in_play::StartingPos;
+use workingtitle::bot_in_play::Orientation;
 
 
 #[derive(Debug)]
@@ -23,8 +23,8 @@ impl<'a> Arena<'a> {
         let polarity = if has_reversed_polarity { Polarity::Reversed } else { Polarity::Normal };
         Arena {
             tape: Arena::make_tape(length as usize),
-            start_bot: BotInPlay::new(bot1, length as i32, StartingPos::Start, Polarity::Normal),
-            end_bot: BotInPlay::new(bot2, length as i32, StartingPos::End, polarity),
+            start_bot: BotInPlay::new(bot1, length as i32, Orientation::Normal, Polarity::Normal),
+            end_bot: BotInPlay::new(bot2, length as i32, Orientation::Reversed, polarity),
         }
     }
 
