@@ -6,12 +6,12 @@ extern crate bf_bot_compiler;
 use bf_bot_compiler::parser;
 use bf_bot_core::bot::Bot;
 use bf_bot_core::bot::Instruction;
-use bf_bot_core::game;
-use bf_bot_core::game::arena::Arena;
-use bf_bot_core::game::bot_in_play::BotInPlay;
-use bf_bot_core::game::bot_in_play::StartingPos;
-use bf_bot_core::game::bot_in_play::Polarity;
-use bf_bot_core::game::bot_in_play::Mutation;
+use bf_bot_core::workingtitle;
+use bf_bot_core::workingtitle::arena::Arena;
+use bf_bot_core::workingtitle::bot_in_play::BotInPlay;
+use bf_bot_core::workingtitle::bot_in_play::StartingPos;
+use bf_bot_core::workingtitle::bot_in_play::Polarity;
+use bf_bot_core::workingtitle::bot_in_play::Mutation;
 
 fn main() {
     // print!("Bot1 input string: ");

@@ -4,10 +4,10 @@
 
 use bot::Bot;
 use bot::Instruction;
-use game::bot_in_play::BotInPlay;
-use game::bot_in_play::Mutation;
-use game::bot_in_play::Polarity;
-use game::bot_in_play::StartingPos;
+use workingtitle::bot_in_play::BotInPlay;
+use workingtitle::bot_in_play::Mutation;
+use workingtitle::bot_in_play::Polarity;
+use workingtitle::bot_in_play::StartingPos;
 
 
 #[derive(Debug)]
