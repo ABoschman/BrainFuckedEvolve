@@ -3,11 +3,11 @@
 #![allow(dead_code)]
 
 use bot::Bot;
-use bot::Instruction;
 use workingtitle::bot_in_play::BotInPlay;
 use workingtitle::bot_in_play::Mutation;
 use workingtitle::bot_in_play::Polarity;
 use workingtitle::bot_in_play::Orientation;
+use round::RoundResult;
 
 
 #[derive(Debug)]
@@ -26,6 +26,13 @@ impl<'a> Arena<'a> {
             start_bot: BotInPlay::new(bot1, length as i32, Orientation::Normal, Polarity::Normal),
             end_bot: BotInPlay::new(bot2, length as i32, Orientation::Reversed, polarity),
         }
+    }
+
+    fn make_tape(length: usize) -> Vec<i8> {
+        let mut tape = vec!(0i8; length);
+        tape[0] = i8::min_value();
+        tape[length - 1] = i8::min_value();
+        tape
     }
 
     pub fn step(&mut self) {
@@ -50,24 +57,18 @@ impl<'a> Arena<'a> {
         option
     }
 
-    pub fn make_tape(length: usize) -> Vec<i8> {
-        let mut tape = vec!(0i8; length);
-        tape[0] = i8::min_value();
-        tape[length - 1] = i8::min_value();
-        tape
+    /// Checks if at least one of the participating bots has lost.
+    /// Call this after each step, if the result is true then the round can be ended.
+    pub fn has_loser(&self) -> bool {
+        false//todo
+    }
+
+    pub fn generate_result(&self) -> RoundResult {
+        RoundResult::new(false,false)//TODO
     }
 
     pub fn get_tape(&self) -> &Vec<i8> {
         &self.tape
     }
 
-}
-
-#[deprecated]
-pub fn determine_winner(arena: &mut Arena) -> i32 {
-    for i in 0..100_000 {
-        arena.step();
-    }
-    println!("{:?}", arena.tape);
-    1 //TODO: return total nr rounds that this game took.
 }

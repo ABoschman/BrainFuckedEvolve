@@ -1,5 +1,3 @@
-//!
-
 #![allow(dead_code, unused_variables, unused_imports)]//TODO: Remove this debug line.
 
 use bot::Bot;
@@ -10,16 +8,16 @@ pub fn play_round(bot_a: &Bot, bot_b: &Bot, round_params: &RoundParams) -> Round
     let mut arena = Arena::new(bot_a, bot_b, round_params.tape_length, round_params.invert_polarity);
     for i in 0..round_params.max_steps {
         arena.step();
+        if arena.has_loser() { break; }
     }
-    //TODO: Read winning conditions.
-    RoundResult::new(false, false)
+    arena.generate_result()
 }
 
+//TODO: Consideration: Result is a special thing in Rust std. Maybe rename this struct?
 pub struct RoundResult {
     pub bot_a_lost: bool,
     pub bot_b_lost: bool,
 }
-
 
 impl RoundResult {
 
@@ -49,7 +47,4 @@ impl RoundResult {
 #[allow(non_snake_case)]
 mod tests {
     use super::*;
-
-    // #[test]
-    // fn play_round
 }

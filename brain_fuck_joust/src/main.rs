@@ -21,7 +21,6 @@ fn main() {
     println!("{:?} << Initial Tape", arena.get_tape());
     println!("Bot1: {:#?}", bot1);
     println!("Bot2: {:#?}", bot2);
-    arena::determine_winner(&mut arena);
 }
 
 fn make_test_bot(code: String) -> Bot {
