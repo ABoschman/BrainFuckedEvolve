@@ -95,7 +95,7 @@ impl Orientation {
     /// # Examples
     ///
     /// ```
-    /// use bf_bot_core::workingtitle::bot_in_play::Orientation;
+    /// use bf_bot_core::bot_in_play::Orientation;
     /// assert_eq!(Orientation::Normal.calc_movement_relative_to_tape(1), 1);
     /// assert_eq!(Orientation::Normal.calc_movement_relative_to_tape(-1), -1);
     /// assert_eq!(Orientation::Reversed.calc_movement_relative_to_tape(1), -1);
@@ -126,7 +126,7 @@ impl Polarity {
     /// # Examples
     ///
     /// ```
-    /// use bf_bot_core::workingtitle::bot_in_play::Polarity;
+    /// use bf_bot_core::bot_in_play::Polarity;
     /// assert_eq!(Polarity::Normal.mutation_relative_to_tape(1), 1);
     /// assert_eq!(Polarity::Normal.mutation_relative_to_tape(-1), -1);
     /// assert_eq!(Polarity::Reversed.mutation_relative_to_tape(1), -1);

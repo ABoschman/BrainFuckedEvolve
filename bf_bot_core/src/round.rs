@@ -2,7 +2,7 @@
 
 use bot::Bot;
 use game::RoundParams;
-use workingtitle::arena::Arena;
+use arena::Arena;
 
 pub fn play_round(bot_a: &Bot, bot_b: &Bot, round_params: &RoundParams) -> RoundResult {
     let mut arena = Arena::new(bot_a, bot_b, round_params.tape_length, round_params.invert_polarity);

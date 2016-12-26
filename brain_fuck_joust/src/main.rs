@@ -5,8 +5,8 @@ extern crate bf_bot_compiler;
 
 use bf_bot_compiler::parser;
 use bf_bot_core::bot::Bot;
-use bf_bot_core::workingtitle::arena;
-use bf_bot_core::workingtitle::arena::Arena;
+use bf_bot_core::arena;
+use bf_bot_core::arena::Arena;
 
 fn main() {
     // print!("Bot1 input string: ");

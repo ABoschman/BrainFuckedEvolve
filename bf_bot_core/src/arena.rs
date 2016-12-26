@@ -3,10 +3,10 @@
 #![allow(dead_code)]
 
 use bot::Bot;
-use workingtitle::bot_in_play::BotInPlay;
-use workingtitle::bot_in_play::Mutation;
-use workingtitle::bot_in_play::Polarity;
-use workingtitle::bot_in_play::Orientation;
+use bot_in_play::BotInPlay;
+use bot_in_play::Mutation;
+use bot_in_play::Polarity;
+use bot_in_play::Orientation;
 use round::RoundResult;
 
 
