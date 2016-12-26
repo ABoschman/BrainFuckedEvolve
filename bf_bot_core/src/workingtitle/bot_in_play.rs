@@ -67,8 +67,8 @@ impl<'a> BotInPlay<'a> {
         self.code_pointer += 1;
     }
 
-    pub fn bot_is_off_tape(&self, tape_length: i32) -> bool {
-        self.pos < 0 || self.pos >= tape_length
+    pub fn bot_is_off_tape(&self, tape_length: &i32) -> bool {
+        self.pos < 0 || &self.pos >= tape_length
     }
 
     pub fn get_bot(&self) -> &Bot {

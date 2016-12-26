@@ -15,6 +15,8 @@ pub struct Arena<'a> {
     tape: Vec<i8>,
     start_bot: BotInPlay<'a>,
     end_bot: BotInPlay<'a>,
+    flag_a_previously_zero: bool,
+    flag_b_previously_zero: bool,    
 }
 
 impl<'a> Arena<'a> {
@@ -25,6 +27,8 @@ impl<'a> Arena<'a> {
             tape: Arena::make_tape(length as usize),
             start_bot: BotInPlay::new(bot1, length as i32, Orientation::Normal, Polarity::Normal),
             end_bot: BotInPlay::new(bot2, length as i32, Orientation::Reversed, polarity),
+            flag_a_previously_zero: false,
+            flag_b_previously_zero: false,
         }
     }
 
@@ -36,6 +40,8 @@ impl<'a> Arena<'a> {
     }
 
     pub fn step(&mut self) {
+        self.flag_a_previously_zero = self.tape[0] == 0;
+        self.flag_b_previously_zero = self.tape[self.tape.len()] == 0;
         let optional_cell_mutation_1 = Arena::step_bot(&mut self.start_bot, &self.tape);
         let optional_cell_mutation_2 = Arena::step_bot(&mut self.end_bot, &self.tape);
         if let Some(mutation) = optional_cell_mutation_1 {
@@ -60,11 +66,18 @@ impl<'a> Arena<'a> {
     /// Checks if at least one of the participating bots has lost.
     /// Call this after each step, if the result is true then the round can be ended.
     pub fn has_loser(&self) -> bool {
-        false//todo
+        self.start_bot.bot_is_off_tape(&(self.tape.len() as i32))
+        || (self.flag_a_previously_zero && self.tape[0]==0)
+        || self.end_bot.bot_is_off_tape(&(self.tape.len() as i32))
+        || (self.flag_b_previously_zero && self.tape[self.tape.len()]==0)
     }
 
     pub fn generate_result(&self) -> RoundResult {
         RoundResult::new(false,false)//TODO
+    }
+
+    fn bot_lost(&self, bot_in_play: &BotInPlay) -> bool {
+        true//todo
     }
 
     pub fn get_tape(&self) -> &Vec<i8> {
