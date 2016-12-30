@@ -44,6 +44,8 @@ impl Issue {
 
 pub fn lint_check(program: &str) -> Vec<Issue> {
     vec![]
+    .push(check_bracket_mismatch(program))
+    .push(check_unintended_dot(program))
 }
 
 fn check_bracket_mismatch(program: &str) -> Vec<Issue> {
