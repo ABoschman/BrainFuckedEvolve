@@ -2,12 +2,12 @@
 #![allow(unused_variables, unused_imports)]
 #![allow(dead_code)]
 
-use bot::Bot;
+use bot::bot::Bot;
 use bot_in_play::BotInPlay;
 use bot_in_play::Mutation;
 use bot_in_play::Polarity;
 use bot_in_play::Orientation;
-use round::RoundResult;
+use round::round_result::RoundResult;
 
 
 #[derive(Debug)]

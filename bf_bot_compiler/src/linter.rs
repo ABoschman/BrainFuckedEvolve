@@ -43,9 +43,10 @@ impl Issue {
 }
 
 pub fn lint_check(program: &str) -> Vec<Issue> {
-    vec![]
-    .push(check_bracket_mismatch(program))
-    .push(check_unintended_dot(program))
+    let mut vec = vec![];
+    vec.append(&mut check_bracket_mismatch(program));
+    vec.append(&mut check_unintended_dot(program));
+    vec
 }
 
 fn check_bracket_mismatch(program: &str) -> Vec<Issue> {
@@ -97,7 +98,7 @@ fn check_comma(program: &str) -> Vec<Issue> {
     vec![]
 }
 
-//TODO: Right now I use chars(), I think this will result in unexpected behaviour if the input is not ascii.
+//TODO: Right now I use chars(), I think this might result in unexpected behaviour if the input is not ascii.
 
 #[test]
 #[allow(non_snake_case)]
@@ -107,6 +108,7 @@ fn checkUnintendedDot_forEmptyProgram_raisesNoWarnings() {
     assert_eq!(&expected, &check_unintended_dot(input));
 }
 
+#[ignore]
 #[test]
 #[allow(non_snake_case)]
 fn checkUnintendedDot_forDotSurroundedByComments_raisesWarning() {

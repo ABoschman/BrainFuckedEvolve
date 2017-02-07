@@ -3,6 +3,8 @@ name = "brain_fuck_joust"
 version = "0.1.0"
 authors = ["Arjan Boschman <a.boschman@hotmail.com>"]
 
+[workspace]
+
 [dependencies]
 
 [dependencies.bf_bot_core]

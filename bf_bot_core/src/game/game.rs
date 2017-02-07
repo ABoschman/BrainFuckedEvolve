@@ -3,59 +3,33 @@
 //! Rather than running a single round (which would have a random tape length from 10 to 30), tournaments generally run 42 rounds (or "jousts") between the two warriors, in order to make the results deterministic. 
 //! Two things are varied: the tape has one of 21 different lengths (the integers from 10 to 30 inclusive); and one of the warriors may have its polarity exchanged, i.e., exchanging the meaning of + and -.
 //!
-//! The terminology used by this program is as follows: A complete game consists of 42 rounds. Each round consists of steps. At each step, both bots execute one command in their program. 
+//! The terminology used by this program is as follows: A complete game consists of 42 rounds. Each round consists of steps. At each step, both bots execute one instruction in their program. 
 //! For performance reasons, it is possible to run an incomplete game, consisting of fewer than 42 rounds. An incomplete game gives non-deterministic results. 
 
 #![allow(dead_code, unused_variables, unused_imports)]//TODO: Remove this debug line.
 
-use bot::Bot;
-use round::play_round;
-use round::RoundResult;
+use bot::bot::Bot;
+use round;
+use round::round_result::RoundResult;
+use round::round_params::RoundParams;
+use game::game_result::GameResult;
 
-/// Compares two bots in a (complete) game and returns the result. 
+/// Compares two bots in a (complete) game and returns the result.
 pub fn run_complete_game(bot_a: &Bot, bot_b: &Bot) -> GameResult {
-    run_game(bot_a, bot_b, AllRounds::new() )
+    run_game(bot_a, bot_b, AllRounds::new())
 }
 
 /// Compares two bots in a game consisting of the provided rounds. Returns the result of the game.
 pub fn run_game<I>(bot_a: &Bot, bot_b: &Bot, rounds: I) -> GameResult
     where I: Iterator<Item=RoundParams> {
     rounds.fold(GameResult::new(), | mut game_result, round_params | {
-        let round_result = play_round(bot_a, bot_b, &round_params);
+        let round_result = round::play(bot_a, bot_b, &round_params);
         game_result.add_result_to_total(&round_result);
         game_result
     })
 }
 
-/// The result of a game of Brainfuck joust. A game consists of multiple rounds.
-#[derive(Debug)]
-#[derive(PartialEq)]
-pub struct GameResult {
-    bot_a_points: i8,
-    bot_b_points: i8,
-}
 
-impl GameResult {
-    fn new() -> GameResult {
-        GameResult { bot_a_points: 0, bot_b_points: 0 }
-    }
-
-    fn add_result_to_total(&mut self, round_result: &RoundResult) {
-        if round_result.has_winner() {
-            self.bot_a_points += if round_result.bot_a_lost { -1 } else { 1 };
-            self.bot_b_points += if round_result.bot_b_lost { -1 } else { 1 };
-        }
-    }
-}
-
-/// Specifies the conditions of a single round of Brainfuck Jousting.
-#[derive(Debug)]
-#[derive(PartialEq)]
-pub struct RoundParams {
-    pub tape_length: u32,
-    pub invert_polarity: bool,
-    pub max_steps: u32,
-}
 
 //===== Default rounds supplier, used for complete games:
 
@@ -81,7 +55,7 @@ impl AllRounds {
     }
 
     fn current_item(&self) -> RoundParams {
-        RoundParams { 
+        RoundParams {
             tape_length: self.tape_length, 
             invert_polarity: self.invert_polarity,
             max_steps: COMPLETE_GAME_MAX_STEPS,
@@ -115,8 +89,9 @@ impl Iterator for AllRounds {
 mod tests {
 
     use super::*;
-    use round::RoundResult;
-
+    use game::game_result::GameResult;
+    use round::round_result::RoundResult;
+    
     #[test]
     fn allRounds_gives42Rounds() {
         assert_eq!(AllRounds::new().count(), 42);

@@ -1,5 +1,5 @@
-use bot::Bot;
-use bot::Instruction;
+use bot::bot::Bot;
+use bot::instruction::Instruction;
 
 /// Represents a Bot during one specific game. This struct holds variables whose lifetime do not exceed that of a single game.
 #[derive(Debug)]
