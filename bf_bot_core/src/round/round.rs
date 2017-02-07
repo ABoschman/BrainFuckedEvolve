@@ -1,6 +1,6 @@
 #![allow(dead_code, unused_variables, unused_imports)]//TODO: Remove this debug line.
 
-use bot::bot::Bot;
+use bot::Bot;
 use round::round_params::RoundParams;
 use round::round_result::RoundResult;
 use arena::Arena;
@@ -14,10 +14,8 @@ pub fn play(bot_a: &Bot, bot_b: &Bot, round_params: &RoundParams) -> RoundResult
     arena.generate_result()
 }
 
-
-
-#[cfg(test)]
-#[allow(non_snake_case)]
-mod tests {
-    use super::*;
-}
+// #[cfg(test)]
+// #[allow(non_snake_case)]
+// mod tests {
+//     use super::*;
+// }

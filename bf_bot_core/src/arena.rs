@@ -1,12 +1,7 @@
+#![allow(dead_code, unused_variables, unused_imports)]//TODO: Remove this debug line.
 
-#![allow(unused_variables, unused_imports)]
-#![allow(dead_code)]
-
-use bot::bot::Bot;
-use bot_in_play::BotInPlay;
-use bot_in_play::Mutation;
-use bot_in_play::Polarity;
-use bot_in_play::Orientation;
+use bot::Bot;
+use bot_in_play::{BotInPlay, Mutation, Polarity, Orientation};
 use round::round_result::RoundResult;
 
 

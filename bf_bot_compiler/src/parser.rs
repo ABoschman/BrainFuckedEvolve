@@ -1,4 +1,4 @@
-use bf_bot_core::bot::instruction::Instruction;
+use bf_bot_core::bot::Instruction;
 
 pub fn parse_bot(code: String) -> Vec<Instruction> {
     let mut vec: Vec<Instruction> = Vec::new();

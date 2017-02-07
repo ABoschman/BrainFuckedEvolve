@@ -1,11 +1,11 @@
 #![allow(dead_code, unused_variables)]
 
-extern crate bf_bot_core;
-extern crate bf_bot_compiler;
+extern crate bf_bot_core as core;
+extern crate bf_bot_compiler as compiler;
 
-use bf_bot_compiler::parser;
-use bf_bot_core::bot::bot::Bot;
-use bf_bot_core::arena::Arena;
+use compiler::parser;
+use core::bot::Bot;
+use core::arena::Arena;
 
 fn main() {
     // print!("Bot1 input string: ");
