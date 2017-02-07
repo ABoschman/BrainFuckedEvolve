@@ -5,7 +5,6 @@ extern crate bf_bot_compiler as compiler;
 
 use compiler::parser;
 use core::bot::Bot;
-use core::arena::Arena;
 
 fn main() {
     // print!("Bot1 input string: ");
@@ -16,8 +15,8 @@ fn main() {
     let bot1: Bot = make_test_bot("[>-+-<]".to_string());
     print!("Bot2 input string: ");
     let bot2: Bot = make_test_bot("[>+-+<]".to_string());    
-    let arena = Arena::new(&bot1, &bot2, 10, false);
-    println!("{:?} << Initial Tape", arena.get_tape());
+    // let arena = Arena::new(&bot1, &bot2, 10, false);
+    // println!("{:?} << Initial Tape", arena.get_tape());
     println!("Bot1: {:#?}", bot1);
     println!("Bot2: {:#?}", bot2);
 }

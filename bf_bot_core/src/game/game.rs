@@ -1,6 +1,5 @@
 use bot::Bot;
-use round;
-use round::round_params::RoundParams;
+use round::{self, RoundParams};
 use game::game_result::GameResult;
 use game::all_rounds::AllRounds;
 

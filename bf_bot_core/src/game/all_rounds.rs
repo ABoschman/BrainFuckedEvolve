@@ -1,4 +1,7 @@
-use round::round_params::RoundParams;
+//! Iterator that returns RoundParams. 
+//! This returns RoundParams for every round in a complete game; meaning 42 rounds, half with reversed polarity and covering tape lengths from 10 through 30. 
+
+use round::RoundParams;
 
 /// A complete game consists of rounds with tape lengths from MIN_TAPE_LENGTH to MAX_TAPE_LENGTH. Both bounds are inclusive.
 const MIN_TAPE_LENGTH: u32 = 10;

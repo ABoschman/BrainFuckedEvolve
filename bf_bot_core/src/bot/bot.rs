@@ -7,13 +7,15 @@ pub struct Bot {
 }
 
 impl Bot {
-    pub fn get_program(&self) -> &Vec<Instruction> {
-        &self.program
-    }
-
+ 
     pub fn new(program: Vec<Instruction>) -> Bot {
         Bot {
             program: program
         }
     }
+
+    pub fn get_program(&self) -> &Vec<Instruction> {
+        &self.program
+    }
+
 }

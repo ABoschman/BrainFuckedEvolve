@@ -1,5 +1,8 @@
 pub use self::round::play;
 mod round;
 
-pub mod round_params;
-pub mod round_result;
+pub use self::round_params::RoundParams;
+mod round_params;
+
+pub use self::round_result::RoundResult;
+mod round_result;

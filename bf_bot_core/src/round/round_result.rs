@@ -16,7 +16,7 @@ impl RoundResult {
     /// # Examples
     /// 
     /// ```
-    /// use bf_bot_core::round::round_result::RoundResult;
+    /// use bf_bot_core::round::RoundResult;
     /// assert!(!RoundResult::new(false, false).has_winner());
     /// assert!(RoundResult::new(true, false).has_winner());
     /// assert!(RoundResult::new(false, true).has_winner());
