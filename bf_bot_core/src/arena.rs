@@ -61,11 +61,7 @@ impl<'a> Arena<'a> {
 
     //TODO
     fn generate_result(&self) -> RoundResult {
-        if self.flag_a_zeroed() {
-            RoundResult::new(true, true)
-        } else {
-            RoundResult::new(false, false)            
-        }
+        RoundResult::draw()
     }
 
     fn exceeded_max_steps(&self) -> bool {
@@ -100,19 +96,19 @@ impl<'a> Arena<'a> {
 
 impl<'a> Iterator for Arena<'a> {
     
-    type Item = Option<RoundResult>;
+    type Item = RoundResult;
 
-    fn next(&mut self) -> Option<Option<RoundResult>> {
+    fn next(&mut self) -> Option<RoundResult> {
         if self.exceeded_max_steps() || self.both_programs_ended() {
-            return Some(Some(self.generate_result()));
+            return Some(RoundResult::draw());
         }
         let flag_a_previously_zeroed = self.flag_a_zeroed();
         let flag_b_previously_zeroed = self.flag_b_zeroed();
         self.step();
         if self.has_loser(flag_a_previously_zeroed, flag_b_previously_zeroed) {
-            Some(Some(self.generate_result()))
+            Some(self.generate_result())
         } else {
-            Some(None)
+            Some(RoundResult::round_ongoing())
         }
     }
 
@@ -125,10 +121,6 @@ mod tests {
     use super::*;
     use round::{RoundResult, RoundParams};
     use bot::Instruction;
-
-    /// Use this string as error message when asserting the Option<RoundResult> returned by the Arena iterator contains a value and that value equals a specific expected value.
-    /// The syntax then becomes: assert_eq!(arena.next().unwrap().expect(SOME_VALUE), expected_value);
-    const SOME_VALUE: &'static str = "Expected Arena iterator to return Some<RoundResult>, but returned None instead.";
 
     /// Constructs a Bot with an empty program.
     fn make_empty_bot() -> Bot {
@@ -154,41 +146,41 @@ mod tests {
     }
 
     #[test]
-    fn arena_maxStepsIsZero_returnsRoundResultRightAwayNeitherBotLoses() {
+    fn arena_maxStepsIsZero_returnsDrawAfterFirstStep() {
         let round_params = make_round_params(0);
         let bot_a = make_bot_idle_three_turns();
         let bot_b = make_bot_idle_three_turns();
         let mut arena = Arena::new(&bot_a, &bot_b, &round_params);
-        assert_eq!(arena.next().unwrap().expect(SOME_VALUE), RoundResult::new(false, false));
+        assert_eq!(arena.next().unwrap(), RoundResult::draw());
     }
 
     #[test]
-    fn iterator_maxStepsIsOne_returnsRoundResultOnSecondCall() {
+    fn iterator_maxStepsIsOne_returnsDrawAfterSecondStep() {
         let round_params = make_round_params(1);
         let bot_a = make_bot_idle_three_turns();
         let bot_b = make_bot_idle_three_turns();
         let mut arena = Arena::new(&bot_a, &bot_b, &round_params);
-        assert!(arena.next().unwrap().is_none());        
-        assert!(arena.next().unwrap().is_some());
+        assert_eq!(arena.next().unwrap(), RoundResult::round_ongoing());        
+        assert_eq!(arena.next().unwrap(), RoundResult::draw());
     }
 
     #[test]
-    fn iterator_bothEmptyBots_returnsRoundResultRightAway() {
+    fn iterator_bothEmptyBots_returnsDrawAfterFirstStep() {
         let round_params = make_round_params(100_000);
         let bot_a = make_empty_bot();
         let bot_b = make_empty_bot();
         let mut arena = Arena::new(&bot_a, &bot_b, &round_params);
-        assert!(arena.next().unwrap().is_some());        
+        assert_eq!(arena.next().unwrap(), RoundResult::draw());
     }
 
     #[test]
-    fn iterator_bothFlagsStartAtZero_bothBotsLoseInFirstStep() {
-        let round_params = make_round_params(1);
+    fn iterator_bothFlagsStartAtZero_returnsDrawAfterFirstStep() {
+        let round_params = make_round_params(100_000);
         let bot_a = make_bot_idle_three_turns();
         let bot_b = make_bot_idle_three_turns();
         let mut arena = Arena::new(&bot_a, &bot_b, &round_params);
         arena.tape = vec!(0i8; round_params.tape_length as usize);
-        assert_eq!(arena.next().unwrap().expect(SOME_VALUE), RoundResult::new(true, true));
+        assert_eq!(arena.next().unwrap(), RoundResult::draw());
     }
 
 }
