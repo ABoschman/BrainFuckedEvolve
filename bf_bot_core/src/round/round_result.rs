@@ -1,4 +1,4 @@
-//TODO: Consideration: Result is a special thing in Rust std. Maybe rename this struct?
+#[derive(PartialEq, Debug)]
 pub struct RoundResult {
     pub bot_a_lost: bool,
     pub bot_b_lost: bool,

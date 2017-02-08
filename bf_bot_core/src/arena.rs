@@ -59,18 +59,25 @@ impl<'a> Arena<'a> {
         option
     }
 
+    //TODO
     fn generate_result(&self) -> RoundResult {
-        RoundResult::new(false,false)//TODO
+        if self.flag_a_zeroed() {
+            RoundResult::new(true, true)
+        } else {
+            RoundResult::new(false, false)            
+        }
     }
 
     fn exceeded_max_steps(&self) -> bool {
         self.step_nr >= self.max_steps
     }
 
+    /// Returns true if it detects that the game is in a sink state; meaning that both bots have ended their programs and neither flag is zero.
     fn both_programs_ended(&self) -> bool {
-        let neither_flag_is_zero = !self.flag_a_zeroed() && !self.flag_b_zeroed();
+        // let neither_flag_is_zero = !self.flag_a_zeroed() && !self.flag_b_zeroed();
         let both_ended = self.start_bot.program_has_ended() &&self.end_bot.program_has_ended();
-        neither_flag_is_zero && both_ended
+        // neither_flag_is_zero && 
+        both_ended
     }
 
     fn flag_a_zeroed(&self) -> bool {
@@ -119,38 +126,69 @@ mod tests {
     use round::{RoundResult, RoundParams};
     use bot::Instruction;
 
-    // fn make_empty_bot() -> Bot {
-    //     Bot::new(vec![])
-    // }
+    /// Use this string as error message when asserting the Option<RoundResult> returned by the Arena iterator contains a value and that value equals a specific expected value.
+    /// The syntax then becomes: assert_eq!(arena.next().unwrap().expect(SOME_VALUE), expected_value);
+    const SOME_VALUE: &'static str = "Expected Arena iterator to return Some<RoundResult>, but returned None instead.";
 
+    /// Constructs a Bot with an empty program.
+    fn make_empty_bot() -> Bot {
+        Bot::new(vec![])
+    }
+
+    /// Constructs a Bot that waits three turns and then terminates its program.
+    /// Its program, in BrainFuck: ...
     fn make_bot_idle_three_turns() -> Bot {
-        Bot::new(vec![Instruction::DoNothing, Instruction::DoNothing, Instruction::DoNothing])
+        Bot::new(vec![
+            Instruction::DoNothing, 
+            Instruction::DoNothing, 
+            Instruction::DoNothing
+        ])
+    }
+
+    fn make_round_params(max_steps: u32) -> RoundParams {
+        RoundParams {
+            tape_length: 10,
+            invert_polarity: false,
+            max_steps: max_steps,
+        }
     }
 
     #[test]
-    fn iterator_maxStepsIsZero_returnsRoundResultRightAway() {
-        let round_params = RoundParams {
-            tape_length: 10,
-            invert_polarity: false,
-            max_steps: 0,
-        };
+    fn arena_maxStepsIsZero_returnsRoundResultRightAwayNeitherBotLoses() {
+        let round_params = make_round_params(0);
         let bot_a = make_bot_idle_three_turns();
         let bot_b = make_bot_idle_three_turns();
         let mut arena = Arena::new(&bot_a, &bot_b, &round_params);
-        assert!(arena.next().unwrap().is_some());
+        assert_eq!(arena.next().unwrap().expect(SOME_VALUE), RoundResult::new(false, false));
     }
 
     #[test]
     fn iterator_maxStepsIsOne_returnsRoundResultOnSecondCall() {
-        let round_params = RoundParams {
-            tape_length: 10,
-            invert_polarity: false,
-            max_steps: 1,
-        };
+        let round_params = make_round_params(1);
         let bot_a = make_bot_idle_three_turns();
         let bot_b = make_bot_idle_three_turns();
         let mut arena = Arena::new(&bot_a, &bot_b, &round_params);
         assert!(arena.next().unwrap().is_none());        
         assert!(arena.next().unwrap().is_some());
     }
+
+    #[test]
+    fn iterator_bothEmptyBots_returnsRoundResultRightAway() {
+        let round_params = make_round_params(100_000);
+        let bot_a = make_empty_bot();
+        let bot_b = make_empty_bot();
+        let mut arena = Arena::new(&bot_a, &bot_b, &round_params);
+        assert!(arena.next().unwrap().is_some());        
+    }
+
+    #[test]
+    fn iterator_bothFlagsStartAtZero_bothBotsLoseInFirstStep() {
+        let round_params = make_round_params(1);
+        let bot_a = make_bot_idle_three_turns();
+        let bot_b = make_bot_idle_three_turns();
+        let mut arena = Arena::new(&bot_a, &bot_b, &round_params);
+        arena.tape = vec!(0i8; round_params.tape_length as usize);
+        assert_eq!(arena.next().unwrap().expect(SOME_VALUE), RoundResult::new(true, true));
+    }
+
 }
