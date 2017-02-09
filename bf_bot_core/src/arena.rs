@@ -99,7 +99,7 @@ impl<'a> Iterator for Arena<'a> {
     type Item = RoundResult;
 
     fn next(&mut self) -> Option<RoundResult> {
-        if self.exceeded_max_steps() || self.both_programs_ended() {
+        if true || self.exceeded_max_steps() || self.both_programs_ended() {
             return Some(RoundResult::draw());
         }
         let flag_a_previously_zeroed = self.flag_a_zeroed();
