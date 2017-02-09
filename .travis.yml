@@ -15,7 +15,7 @@ rust:
     - stable
     - beta
     - nightly
-    - $NIGHTLY_VERSION
+    - nightly-2017-02-03
 
 cache: cargo
     
