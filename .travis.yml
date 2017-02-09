@@ -1,16 +1,41 @@
+# Specific clippy versions generally are only supported against specific
+# nightly versions, so select a nightly/clippy combination known to work.
+env:
+  global:
+    - CLIPPY_VERSION=0.0.113
+    - NIGHTLY_VERSION=nightly-2017-02-03
+    
 branches:
     only:
         - master
 
 language: rust
+
 rust:
     - stable
     - beta
     - nightly
+    - $NIGHTLY_VERSION
+
+cache: cargo
+    
 matrix:
     allow_failures:
         - rust: nightly
         
+before_script:
+  - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == $NIGHTLY_VERSION ]]; then
+      cargo install clippy --vers $CLIPPY_VERSION --force;
+      cargo install rustfmt --force;
+    fi'
+
 script:
     - cargo build --manifest-path brain_fuck_joust/Cargo.toml --verbose
     - cargo test --manifest-path brain_fuck_joust/Cargo.toml --verbose --all 
+    - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == $NIGHTLY_VERSION ]]; then
+        cargo clippy -- --deny warnings;
+      fi'
+    - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == $NIGHTLY_VERSION ]]; then
+        export PATH=$PATH:~/.cargo/bin &&
+        cargo fmt -- --write-mode diff;
+      fi'
