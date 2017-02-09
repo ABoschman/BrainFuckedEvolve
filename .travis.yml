@@ -1,0 +1,16 @@
+branches:
+    only:
+        - master
+
+language: rust
+rust:
+    - stable
+    - beta
+    - nightly
+matrix:
+    allow_failures:
+        - rust: nightly
+        
+script:
+    - cargo build --manifest-path brain_fuck_joust/Cargo.toml --verbose
+    - cargo test --manifest-path brain_fuck_joust/Cargo.toml --verbose --all 
