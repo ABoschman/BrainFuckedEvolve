@@ -37,7 +37,26 @@ script:
         cargo clippy -- --deny warnings;
       fi'
     - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == $NIGHTLY_VERSION ]]; then
+        cd bf_bot_core/ &&
+        cargo clippy -- --deny warnings;
+      fi'
+    - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == $NIGHTLY_VERSION ]]; then
+        cd bf_bot_compiler/ &&
+        cargo clippy -- --deny warnings;
+      fi'
+      
+    - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == $NIGHTLY_VERSION ]]; then
         cd brain_fuck_joust/ &&
+        export PATH=$PATH:~/.cargo/bin &&
+        cargo fmt -- --write-mode diff;
+      fi'
+    - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == $NIGHTLY_VERSION ]]; then
+        cd bf_bot_core/ &&
+        export PATH=$PATH:~/.cargo/bin &&
+        cargo fmt -- --write-mode diff;
+      fi'
+    - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == $NIGHTLY_VERSION ]]; then
+        cd bf_bot_compiler/ &&
         export PATH=$PATH:~/.cargo/bin &&
         cargo fmt -- --write-mode diff;
       fi'

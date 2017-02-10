@@ -14,7 +14,7 @@ fn main() {
     print!("Bot1 input string: ");
     let bot1: Bot = make_test_bot("[>-+-<]".to_string());
     print!("Bot2 input string: ");
-    let bot2: Bot = make_test_bot("[>+-+<]".to_string());    
+    let bot2: Bot = make_test_bot("[>+-+<]".to_string());
     // let arena = Arena::new(&bot1, &bot2, 10, false);
     // println!("{:?} << Initial Tape", arena.get_tape());
     println!("Bot1: {:#?}", bot1);

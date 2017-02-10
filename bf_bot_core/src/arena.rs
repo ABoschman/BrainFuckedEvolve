@@ -12,15 +12,24 @@ pub struct Arena<'a> {
 }
 
 impl<'a> Arena<'a> {
-
-    pub fn new<'b>(bot1: &'b Bot, bot2: &'b Bot, round_params: &RoundParams) -> Arena<'b>  {
-        let polarity = if round_params.invert_polarity { Polarity::Reversed } else { Polarity::Normal };
+    pub fn new<'b>(bot1: &'b Bot, bot2: &'b Bot, round_params: &RoundParams) -> Arena<'b> {
+        let polarity = if round_params.invert_polarity {
+            Polarity::Reversed
+        } else {
+            Polarity::Normal
+        };
         Arena {
             max_steps: round_params.max_steps,
             step_nr: 0,
             tape: Arena::make_tape(round_params.tape_length as usize),
-            start_bot: BotInPlay::new(bot1, round_params.tape_length as i32, Orientation::Normal, Polarity::Normal),
-            end_bot: BotInPlay::new(bot2, round_params.tape_length as i32, Orientation::Reversed, polarity),
+            start_bot: BotInPlay::new(bot1,
+                                      round_params.tape_length as i32,
+                                      Orientation::Normal,
+                                      Polarity::Normal),
+            end_bot: BotInPlay::new(bot2,
+                                    round_params.tape_length as i32,
+                                    Orientation::Reversed,
+                                    polarity),
         }
     }
 
@@ -40,15 +49,17 @@ impl<'a> Arena<'a> {
         let optional_cell_mutation_1 = Arena::step_bot(&mut self.start_bot, &self.tape);
         let optional_cell_mutation_2 = Arena::step_bot(&mut self.end_bot, &self.tape);
         if let Some(mutation) = optional_cell_mutation_1 {
-            self.tape[mutation.get_index()] = self.tape[mutation.get_index()].wrapping_add(mutation.get_addend()); 
+            self.tape[mutation.get_index()] = self.tape[mutation.get_index()]
+                .wrapping_add(mutation.get_addend());
         }
         if let Some(mutation) = optional_cell_mutation_2 {
-            self.tape[mutation.get_index()] = self.tape[mutation.get_index()].wrapping_add(mutation.get_addend()); 
+            self.tape[mutation.get_index()] = self.tape[mutation.get_index()]
+                .wrapping_add(mutation.get_addend());
         }
         self.step_nr += 1;
     }
 
-    /// Make the given BotInPlay execute the next instruction. 
+    /// Make the given BotInPlay execute the next instruction.
     fn step_bot(bot_in_play: &mut BotInPlay, tape: &Vec<i8>) -> Option<Mutation> {
         if bot_in_play.program_has_ended() {
             return None;
@@ -68,18 +79,19 @@ impl<'a> Arena<'a> {
         self.step_nr >= self.max_steps
     }
 
-    /// Returns true if it detects that the game is in a sink state; meaning that both bots have ended their programs and neither flag is zero.
+    /// Returns true if it detects that the game is in a sink state; meaning that both bots have
+    /// ended their programs and neither flag is zero.
     fn both_programs_ended(&self) -> bool {
         // let neither_flag_is_zero = !self.flag_a_zeroed() && !self.flag_b_zeroed();
-        let both_ended = self.start_bot.program_has_ended() &&self.end_bot.program_has_ended();
-        // neither_flag_is_zero && 
+        let both_ended = self.start_bot.program_has_ended() && self.end_bot.program_has_ended();
+        // neither_flag_is_zero &&
         both_ended
     }
 
     fn flag_a_zeroed(&self) -> bool {
         self.tape[0] == 0
     }
-    
+
     fn flag_b_zeroed(&self) -> bool {
         self.tape[self.tape.len() - 1] == 0
     }
@@ -87,15 +99,14 @@ impl<'a> Arena<'a> {
     /// Checks if at least one of the participating bots has lost.
     /// Call this after each step, if the result is true then the round can be ended.
     fn has_loser(&self, flag_a_previously_zeroed: bool, flag_b_previously_zeroed: bool) -> bool {
-        self.start_bot.bot_is_off_tape(&(self.tape.len() as i32))
-        || (flag_a_previously_zeroed && self.flag_a_zeroed())
-        || self.end_bot.bot_is_off_tape(&(self.tape.len() as i32))
-        || (flag_b_previously_zeroed && self.flag_b_zeroed())
+        self.start_bot.bot_is_off_tape(&(self.tape.len() as i32)) ||
+        (flag_a_previously_zeroed && self.flag_a_zeroed()) ||
+        self.end_bot.bot_is_off_tape(&(self.tape.len() as i32)) ||
+        (flag_b_previously_zeroed && self.flag_b_zeroed())
     }
 }
 
 impl<'a> Iterator for Arena<'a> {
-    
     type Item = RoundResult;
 
     fn next(&mut self) -> Option<RoundResult> {
@@ -111,13 +122,12 @@ impl<'a> Iterator for Arena<'a> {
             Some(RoundResult::round_ongoing())
         }
     }
-
 }
 
 #[cfg(test)]
 #[allow(non_snake_case)]
 mod tests {
-    
+
     use super::*;
     use round::{RoundResult, RoundParams};
     use bot::Instruction;
@@ -130,11 +140,7 @@ mod tests {
     /// Constructs a Bot that waits three turns and then terminates its program.
     /// Its program, in BrainFuck: ...
     fn make_bot_idle_three_turns() -> Bot {
-        Bot::new(vec![
-            Instruction::DoNothing, 
-            Instruction::DoNothing, 
-            Instruction::DoNothing
-        ])
+        Bot::new(vec![Instruction::DoNothing, Instruction::DoNothing, Instruction::DoNothing])
     }
 
     fn make_round_params(max_steps: u32) -> RoundParams {
@@ -160,7 +166,7 @@ mod tests {
         let bot_a = make_bot_idle_three_turns();
         let bot_b = make_bot_idle_three_turns();
         let mut arena = Arena::new(&bot_a, &bot_b, &round_params);
-        assert_eq!(arena.next().unwrap(), RoundResult::round_ongoing());        
+        assert_eq!(arena.next().unwrap(), RoundResult::round_ongoing());
         assert_eq!(arena.next().unwrap(), RoundResult::draw());
     }
 

@@ -5,11 +5,10 @@ pub struct RoundResult {
 }
 
 impl RoundResult {
-
     fn new(bot_a_lost: bool, bot_b_lost: bool) -> RoundResult {
-        RoundResult { 
-            bot_a_lost: bot_a_lost, 
-            bot_b_lost: bot_b_lost 
+        RoundResult {
+            bot_a_lost: bot_a_lost,
+            bot_b_lost: bot_b_lost,
         }
     }
 
@@ -29,12 +28,12 @@ impl RoundResult {
         RoundResult::new(true, true)
     }
 
-    /// Returns true if this round has a winner. A round has a winner if and only if exactly one bot is a loser.
-    /// If both bots are marked as NOT loser, that means that the round is ongoing.
+    /// Returns true if this round has a winner. A round has a winner if and only if exactly one
+    /// bot is a loser. If both bots are marked as NOT loser, that means that the round is ongoing.
     /// If both bots are marked as loser, that means that the round is a draw.
     ///
     /// # Examples
-    /// 
+    ///
     /// ```
     /// use bf_bot_core::round::RoundResult;
     /// assert!(!RoundResult::round_ongoing().has_winner());
@@ -49,5 +48,4 @@ impl RoundResult {
     pub fn has_loser(&self) -> bool {
         self.bot_a_lost || self.bot_b_lost
     }
-
 }

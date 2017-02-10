@@ -8,18 +8,17 @@ pub struct Mutation {
 }
 
 impl Mutation {
-    
     pub fn new(index: usize, addend: i8) -> Mutation {
         Mutation {
-            index: index, 
-            addend: addend 
+            index: index,
+            addend: addend,
         }
     }
 
     pub fn get_index(&self) -> usize {
         self.index
     }
-    
+
     pub fn get_addend(&self) -> i8 {
         self.addend
     }

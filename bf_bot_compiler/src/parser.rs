@@ -3,7 +3,7 @@ use bf_bot_core::bot::Instruction;
 pub fn parse_bot(code: String) -> Vec<Instruction> {
     let mut vec: Vec<Instruction> = Vec::new();
     for character in code.chars() {
-        let instruction: Instruction  = match character {
+        let instruction: Instruction = match character {
             '<' => Instruction::MoveBack,
             '>' => Instruction::MoveForward,
             '+' => Instruction::Increment,
@@ -14,12 +14,13 @@ pub fn parse_bot(code: String) -> Vec<Instruction> {
                 let opening_index: Option<usize> = find_matching_opening_brace(&vec);
                 match opening_index {
                     Some(value) => {
-                        vec[value] = Instruction::ConditionalGoToForward{target_pointer: vec.len()};
-                        Instruction::ConditionalGoToBack{target_pointer: value}
-                    },
+                        vec[value] =
+                            Instruction::ConditionalGoToForward { target_pointer: vec.len() };
+                        Instruction::ConditionalGoToBack { target_pointer: value }
+                    }
                     None => panic!("Help!"),
                 }
-            },
+            }
             '.' => Instruction::DoNothing,
             _ => Instruction::Comment,
         };
@@ -34,7 +35,10 @@ fn find_matching_opening_brace(vec: &Vec<Instruction>) -> Option<usize> {
     for (i, instruction) in vec.iter().rev().enumerate() {
         // println!("The item at index:{} is a {:?}", i, instruction);
         if instruction == &Instruction::Placeholder {
-            println!("Placeholder {:?} found at index: {} which translates to {}", instruction, i, vec.len() - (i + 1));
+            println!("Placeholder {:?} found at index: {} which translates to {}",
+                     instruction,
+                     i,
+                     vec.len() - (i + 1));
             return Some(vec.len() - (i + 1));
         }
     }
@@ -77,7 +81,6 @@ fn parseBot_smallerThanSign_shouldReturnMoveBack() {
 #[allow(non_snake_case)]
 fn parseBot_multipleInstructions_shouldReturnLongerVector() {
     let input: String = "<<".to_string();
-    let expected: Vec<Instruction> = vec![Instruction::MoveBack,Instruction::MoveBack];
+    let expected: Vec<Instruction> = vec![Instruction::MoveBack, Instruction::MoveBack];
     assert_eq!(&expected, &parse_bot(input));
 }
-
