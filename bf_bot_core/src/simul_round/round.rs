@@ -1,7 +1,7 @@
-use bot::Bot;
-use round::RoundParams;
-use round::RoundResult;
-use arena::Arena;
+use bf::Bot;
+use simul_round::RoundParams;
+use simul_round::RoundResult;
+use engine::Arena;
 
 pub fn play(bot_a: &Bot, bot_b: &Bot, round_params: &RoundParams) -> RoundResult {
     Arena::new(bot_a, bot_b, round_params)

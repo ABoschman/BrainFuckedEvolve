@@ -1,5 +1,4 @@
-pub mod bot;
-pub mod game;
-pub mod round;
-pub mod arena;
-pub mod bot_in_play;
+pub mod bf;
+pub mod simul_game;
+pub mod simul_round;
+pub mod engine;

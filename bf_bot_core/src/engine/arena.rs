@@ -1,6 +1,6 @@
-use bot::Bot;
-use bot_in_play::{BotInPlay, Mutation, Polarity, Orientation};
-use round::{RoundResult, RoundParams};
+use bf::Bot;
+use engine::{BotInPlay, Mutation, Polarity, Orientation};
+use simul_round::{RoundResult, RoundParams};
 
 #[derive(Debug)]
 pub struct Arena<'a> {
@@ -82,10 +82,9 @@ impl<'a> Arena<'a> {
     /// Returns true if it detects that the game is in a sink state; meaning that both bots have
     /// ended their programs and neither flag is zero.
     fn both_programs_ended(&self) -> bool {
-        // let neither_flag_is_zero = !self.flag_a_zeroed() && !self.flag_b_zeroed();
+        let neither_flag_is_zero = !self.flag_a_zeroed() && !self.flag_b_zeroed();
         let both_ended = self.start_bot.program_has_ended() && self.end_bot.program_has_ended();
-        // neither_flag_is_zero &&
-        both_ended
+        neither_flag_is_zero && both_ended
     }
 
     fn flag_a_zeroed(&self) -> bool {
@@ -129,8 +128,8 @@ impl<'a> Iterator for Arena<'a> {
 mod tests {
 
     use super::*;
-    use round::{RoundResult, RoundParams};
-    use bot::Instruction;
+    use simul_round::{RoundResult, RoundParams};
+    use bf::Instruction;
 
     /// Constructs a Bot with an empty program.
     fn make_empty_bot() -> Bot {

@@ -69,12 +69,12 @@ fn check_bracket_mismatch(program: &str) -> Vec<Issue> {
 fn check_unintended_dot(program: &str) -> Vec<Issue> {
     program.chars()
         .skip(1)
-        .scan((State::FollowsNothing, program.chars().nth(0)),
+        .scan((FollowsAfter::Nothing, program.chars().nth(0)),
               |&mut (ref follows, previous_char), current_char| {
             let state = if is_valid_instruction(previous_char.unwrap()) {
-                State::FollowsInstruction
+                FollowsAfter::Instruction
             } else {
-                State::FollowsComment
+                FollowsAfter::Comment
             };
             Some((state, current_char))
         })
@@ -83,7 +83,7 @@ fn check_unintended_dot(program: &str) -> Vec<Issue> {
         })
         .enumerate()
         .filter(|&(index, (ref state, character))| {
-            state == &State::FollowsComment && character == '.'
+            state == &FollowsAfter::Comment && character == '.'
         })
         .map(|(index, (state, character))| {
             Issue::new_unintentional_dot(CodeLocation {
@@ -96,10 +96,10 @@ fn check_unintended_dot(program: &str) -> Vec<Issue> {
 
 #[derive(Debug)]
 #[derive(PartialEq)]
-enum State {
-    FollowsNothing,
-    FollowsComment,
-    FollowsInstruction,
+enum FollowsAfter {
+    Nothing,
+    Comment,
+    Instruction,
 }
 
 //TODO: Move. Tests. Doc.

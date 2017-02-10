@@ -9,3 +9,6 @@ mod orientation;
 
 pub use self::polarity::Polarity;
 mod polarity;
+
+pub use self::arena::Arena;
+mod arena;

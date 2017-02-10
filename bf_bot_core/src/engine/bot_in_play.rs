@@ -1,5 +1,5 @@
-use bot::{Bot, Instruction};
-use bot_in_play::{Mutation, Orientation, Polarity};
+use bf::{Bot, Instruction};
+use engine::{Mutation, Orientation, Polarity};
 
 /// Represents a Bot during one specific game. This struct holds variables whose lifetime do not
 /// exceed that of a single game.

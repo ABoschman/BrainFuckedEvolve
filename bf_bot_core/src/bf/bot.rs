@@ -1,4 +1,4 @@
-use bot::instruction::Instruction;
+use bf::instruction::Instruction;
 
 /// Represents a Bot. Holds variables that are related to the Bot in general.
 #[derive(Debug)]

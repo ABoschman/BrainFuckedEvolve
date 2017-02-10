@@ -1,4 +1,4 @@
-//! Takes BrainFuck bot script as string or as text file.
+//! Takes `BrainFuck` bot script as string or as text file.
 //! Checks script for validity.
 //! Error if mismatching brackets, warning if possible accidental use of full-stop as comment. Also
 //! warn if use comma, it's a reserved character in original BF.

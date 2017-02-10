@@ -20,7 +20,7 @@ impl Polarity {
     /// # Examples
     ///
     /// ```
-    /// use bf_bot_core::bot_in_play::Polarity;
+    /// use bf_bot_core::engine::Polarity;
     /// assert_eq!(Polarity::Normal.mutation_relative_to_tape(1), 1);
     /// assert_eq!(Polarity::Normal.mutation_relative_to_tape(-1), -1);
     /// assert_eq!(Polarity::Reversed.mutation_relative_to_tape(1), -1);

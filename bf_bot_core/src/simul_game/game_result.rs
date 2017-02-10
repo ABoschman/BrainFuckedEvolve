@@ -1,4 +1,4 @@
-use round::RoundResult;
+use simul_round::RoundResult;
 
 /// The result of a game of Brainfuck joust. A game consists of multiple rounds.
 #[derive(Debug)]
@@ -29,7 +29,7 @@ impl GameResult {
 mod tests {
 
     use super::*;
-    use round::RoundResult;
+    use simul_round::RoundResult;
 
     #[test]
     fn addResultToTotal_draw_bothStayAtZero() {

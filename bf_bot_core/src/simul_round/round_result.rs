@@ -35,7 +35,7 @@ impl RoundResult {
     /// # Examples
     ///
     /// ```
-    /// use bf_bot_core::round::RoundResult;
+    /// use bf_bot_core::simul_round::RoundResult;
     /// assert!(!RoundResult::round_ongoing().has_winner());
     /// assert!(RoundResult::start_bot_wins().has_winner());
     /// assert!(RoundResult::end_bot_wins().has_winner());

@@ -1,6 +1,4 @@
-
-
-/// The orientation of a BotInPlay is determined by its starting position on the tape.
+/// The orientation of a `BotInPlay` is determined by its starting position on the tape.
 /// Orientation doesn't affect the gameplay from the bot's perspective, each bot may write their
 /// code as though they start at cell zero.
 #[derive(Debug)]
@@ -23,7 +21,7 @@ impl Orientation {
     /// # Examples
     ///
     /// ```
-    /// use bf_bot_core::bot_in_play::Orientation;
+    /// use bf_bot_core::engine::Orientation;
     /// assert_eq!(Orientation::Normal.calc_movement_relative_to_tape(1), 1);
     /// assert_eq!(Orientation::Normal.calc_movement_relative_to_tape(-1), -1);
     /// assert_eq!(Orientation::Reversed.calc_movement_relative_to_tape(1), -1);

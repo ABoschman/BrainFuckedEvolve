@@ -4,7 +4,7 @@ extern crate bf_bot_core as core;
 extern crate bf_bot_compiler as compiler;
 
 use compiler::parser;
-use core::bot::Bot;
+use core::bf::Bot;
 
 fn main() {
     // print!("Bot1 input string: ");
