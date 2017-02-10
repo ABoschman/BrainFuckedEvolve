@@ -4,10 +4,10 @@
 
 use simul_round::RoundParams;
 
-/// A complete game consists of rounds with tape lengths from `MIN_TAPE_LENGTH` to 
+/// A complete game consists of rounds with tape lengths from `MIN_TAPE_LENGTH` to
 /// `MAX_TAPE_LENGTH`. Both bounds are inclusive.
 const MIN_TAPE_LENGTH: u32 = 10;
-/// A complete game consists of rounds with tape lengths from `MIN_TAPE_LENGTH` to 
+/// A complete game consists of rounds with tape lengths from `MIN_TAPE_LENGTH` to
 /// `MAX_TAPE_LENGTH`. Both bounds are inclusive.
 const MAX_TAPE_LENGTH: u32 = 30;
 /// Max steps in a round for a complete game.
