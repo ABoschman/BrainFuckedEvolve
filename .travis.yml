@@ -33,9 +33,11 @@ script:
     - cargo build --manifest-path brain_fuck_joust/Cargo.toml --verbose
     - cargo test --manifest-path brain_fuck_joust/Cargo.toml --verbose --all 
     - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == $NIGHTLY_VERSION ]]; then
+        cd brain_fuck_joust/ &&
         cargo clippy -- --deny warnings;
       fi'
     - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == $NIGHTLY_VERSION ]]; then
+        cd brain_fuck_joust/ &&
         export PATH=$PATH:~/.cargo/bin &&
         cargo fmt -- --write-mode diff;
       fi'
