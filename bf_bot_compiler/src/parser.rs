@@ -31,7 +31,7 @@ pub fn parse_bot(code: String) -> Vec<Instruction> {
     vec
 }
 
-fn find_matching_opening_brace(vec: &Vec<Instruction>) -> Option<usize> {
+fn find_matching_opening_brace(vec: &[Instruction]) -> Option<usize> {
     for (i, instruction) in vec.iter().rev().enumerate() {
         // println!("The item at index:{} is a {:?}", i, instruction);
         if instruction == &Instruction::Placeholder {

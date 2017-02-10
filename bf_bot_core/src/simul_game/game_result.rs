@@ -1,15 +1,14 @@
 use simul_round::RoundResult;
 
 /// The result of a game of Brainfuck joust. A game consists of multiple rounds.
-#[derive(Debug)]
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq, Default)]
 pub struct GameResult {
     pub bot_a_points: i8,
     pub bot_b_points: i8,
 }
 
 impl GameResult {
-    pub fn new() -> GameResult {
+    pub fn new() -> Self {
         GameResult {
             bot_a_points: 0,
             bot_b_points: 0,

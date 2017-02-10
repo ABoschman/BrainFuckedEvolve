@@ -60,7 +60,7 @@ impl<'a> Arena<'a> {
     }
 
     /// Make the given BotInPlay execute the next instruction.
-    fn step_bot(bot_in_play: &mut BotInPlay, tape: &Vec<i8>) -> Option<Mutation> {
+    fn step_bot(bot_in_play: &mut BotInPlay, tape: &[i8]) -> Option<Mutation> {
         if bot_in_play.program_has_ended() {
             return None;
         }

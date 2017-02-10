@@ -105,13 +105,7 @@ enum FollowsAfter {
 //TODO: Move. Tests. Doc.
 fn is_valid_instruction(character: char) -> bool {
     match character {
-        '<' => true,
-        '>' => true,
-        '+' => true,
-        '-' => true,
-        '[' => true,
-        ']' => true,
-        '.' => true,
+        '<' | '>' | '+' | '-' | '[' | ']' | '.' => true,
         _ => false,
     }
 }
