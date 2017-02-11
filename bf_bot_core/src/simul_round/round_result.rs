@@ -5,26 +5,26 @@ pub struct RoundResult {
 }
 
 impl RoundResult {
-    fn new(bot_a_lost: bool, bot_b_lost: bool) -> RoundResult {
+    pub fn new(bot_a_lost: bool, bot_b_lost: bool) -> Self {
         RoundResult {
             bot_a_lost: bot_a_lost,
             bot_b_lost: bot_b_lost,
         }
     }
 
-    pub fn round_ongoing() -> RoundResult {
+    pub fn round_ongoing() -> Self {
         RoundResult::new(false, false)
     }
 
-    pub fn start_bot_wins() -> RoundResult {
+    pub fn start_bot_wins() -> Self {
         RoundResult::new(false, true)
     }
 
-    pub fn end_bot_wins() -> RoundResult {
+    pub fn end_bot_wins() -> Self {
         RoundResult::new(true, false)
     }
 
-    pub fn draw() -> RoundResult {
+    pub fn draw() -> Self {
         RoundResult::new(true, true)
     }
 
@@ -45,7 +45,19 @@ impl RoundResult {
         self.bot_a_lost ^ self.bot_b_lost
     }
 
-    pub fn has_loser(&self) -> bool {
+    /// Returns true if this round is finished, false if it is still ongoing. Rounds are finished
+    /// as soon as there is at least one loser.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bf_bot_core::simul_round::RoundResult;
+    /// assert!(!RoundResult::round_ongoing().round_is_finished());
+    /// assert!(RoundResult::start_bot_wins().round_is_finished());
+    /// assert!(RoundResult::end_bot_wins().round_is_finished());
+    /// assert!(RoundResult::draw().round_is_finished());
+    /// ```
+    pub fn round_is_finished(&self) -> bool {
         self.bot_a_lost || self.bot_b_lost
     }
 }
