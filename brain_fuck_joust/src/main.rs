@@ -5,20 +5,16 @@ extern crate bf_bot_compiler as compiler;
 
 use compiler::parser;
 use core::bf::Bot;
+use core::simul_game;
 
 fn main() {
-    // print!("Bot1 input string: ");
-    // let bot1: Bot = make_test_bot(">+[[[+]]]--------".to_string());
-    // print!("Bot2 input string: ");
-    // let bot2: Bot = make_test_bot(">+++++_+++++ >-----_----- >+>- >+>- >+>-".to_string());
     print!("Bot1 input string: ");
-    let bot1: Bot = make_test_bot("[>-+-<]".to_string());
+    let bot1: Bot = make_test_bot(">>> >>> >>> [-]".to_string());
     print!("Bot2 input string: ");
-    let bot2: Bot = make_test_bot("[>+-+<]".to_string());
-    // let arena = Arena::new(&bot1, &bot2, 10, false);
-    // println!("{:?} << Initial Tape", arena.get_tape());
-    println!("Bot1: {:#?}", bot1);
-    println!("Bot2: {:#?}", bot2);
+    let bot2: Bot = make_test_bot("[-]".to_string());
+
+    let result = simul_game::run_complete(&bot1, &bot2);
+    println!("{:?}", result);
 }
 
 fn make_test_bot(code: String) -> Bot {
