@@ -1,25 +1,36 @@
 use bf_bot_core::bf::Instruction;
 
 pub fn parse_bot(code: String) -> Vec<Instruction> {
-    // let mut bracket_stack: Vec<usize> = Vec::new();
+    let mut bracket_stack: Vec<usize> = Vec::new();
     let mut vec: Vec<Instruction> = Vec::new();
-
     for character in code.chars() {
+        //todo: change into scan with stack as mutable state?
+
         let instruction: Instruction = match character {
             '<' => Instruction::MoveBack,
             '>' => Instruction::MoveForward,
             '+' => Instruction::Increment,
             '-' => Instruction::Decrement,
-            '[' => Instruction::Placeholder,
+            '[' => {
+                bracket_stack.push(vec.len());
+                start_while_not_zero_placeholder()
+            }
             ']' => {
-                //Look for index of openingbrace.
-                let opening_index: Option<usize> = find_matching_opening_brace(&vec);
+                let opening_index: Option<usize> = bracket_stack.pop();
                 match opening_index {
                     Some(value) => {
-                        vec[value] = Instruction::WhileNotZeroOpen { target_pointer: vec.len() };
-                        Instruction::WhileNotZeroClose { target_pointer: value }
+                        assert_eq!(vec[value], start_while_not_zero_placeholder());
+                        vec[value] = Instruction::StartWhileNotZero { target_pointer: vec.len() };
+                        Instruction::EndWhileNotZero { target_pointer: value }
                     }
                     None => panic!("Unmatched square closing bracket."),
+                }
+            }
+            '(' => Instruction::StartFor { target_pointer: 0 },
+            ')' => {
+                Instruction::EndFor {
+                    target_pointer: 0,
+                    nr_iterations: 1,
                 }
             }
             '.' => Instruction::DoNothing,
@@ -29,26 +40,16 @@ pub fn parse_bot(code: String) -> Vec<Instruction> {
             vec.push(instruction);
         }
     }
-
-    if (&vec).into_iter().any(|instruction| instruction == &Instruction::Placeholder) {
+    if !bracket_stack.is_empty() {
         panic!("Unmatched square opening bracket.");
     }
     vec
 }
 
-fn find_matching_opening_brace(vec: &[Instruction]) -> Option<usize> {
-    for (i, instruction) in vec.iter().rev().enumerate() {
-        // println!("The item at index:{} is a {:?}", i, instruction);
-        if instruction == &Instruction::Placeholder {
-            println!("Placeholder {:?} found at index: {} which translates to {}",
-                     instruction,
-                     i,
-                     vec.len() - (i + 1));
-            return Some(vec.len() - (i + 1));
-        }
-    }
-    None
+fn start_while_not_zero_placeholder() -> Instruction {
+    Instruction::StartWhileNotZero { target_pointer: usize::max_value() }
 }
+
 
 #[cfg(test)]
 #[allow(non_snake_case)]
@@ -135,18 +136,18 @@ mod tests {
     #[test]
     fn parseBot_squareBrackets_returnsWhileNotZeroLoop() {
         let input: String = "[]".to_string();
-        let expected: Vec<Instruction> = vec![Instruction::WhileNotZeroOpen { target_pointer: 1 },
-                                              Instruction::WhileNotZeroClose { target_pointer: 0 }];
+        let expected: Vec<Instruction> = vec![Instruction::StartWhileNotZero { target_pointer: 1 },
+                                              Instruction::EndWhileNotZero { target_pointer: 0 }];
         assert_eq!(&expected, &parse_bot(input));
     }
 
     #[test]
     fn parseBot_nestedSquareBrackets_returnsNestedWhileNotZeroLoop() {
         let input: String = "[[]]".to_string();
-        let expected: Vec<Instruction> = vec![Instruction::WhileNotZeroOpen { target_pointer: 3 },
-                                              Instruction::WhileNotZeroOpen { target_pointer: 2 },
-                                              Instruction::WhileNotZeroClose { target_pointer: 1 },
-                                              Instruction::WhileNotZeroClose { target_pointer: 0 }];
+        let expected: Vec<Instruction> = vec![Instruction::StartWhileNotZero { target_pointer: 3 },
+                                              Instruction::StartWhileNotZero { target_pointer: 2 },
+                                              Instruction::EndWhileNotZero { target_pointer: 1 },
+                                              Instruction::EndWhileNotZero { target_pointer: 0 }];
         assert_eq!(&expected, &parse_bot(input));
     }
 

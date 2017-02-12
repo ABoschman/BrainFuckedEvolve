@@ -1,13 +1,16 @@
-#[derive(Debug)]
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum Instruction {
     MoveBack,
     MoveForward,
     Increment,
     Decrement,
-    WhileNotZeroOpen { target_pointer: usize },
-    WhileNotZeroClose { target_pointer: usize },
+    StartWhileNotZero { target_pointer: usize },
+    EndWhileNotZero { target_pointer: usize },
     DoNothing,
+    StartFor { target_pointer: usize },
+    EndFor {
+        target_pointer: usize,
+        nr_iterations: usize,
+    },
     Comment,
-    Placeholder,
 }
