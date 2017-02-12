@@ -61,7 +61,7 @@ mod tests {
     }
 
     #[test]
-    fn iter_maxStepsIsZero_returnsDrawAfterFirstStep() {
+    fn iter_maxStepsIsZero_returnsDrawAtFirstStep() {
         let round_params = make_round_params(0);
         let bot_a = make_bot_idle_three_turns();
         let bot_b = make_bot_idle_three_turns();
@@ -70,13 +70,33 @@ mod tests {
     }
 
     #[test]
-    fn iter_maxStepsIsOne_returnsDrawAfterSecondStep() {
+    fn iter_maxStepsIsOne_returnsDrawAtSecondStep() {
         let round_params = make_round_params(1);
         let bot_a = make_bot_idle_three_turns();
         let bot_b = make_bot_idle_three_turns();
         let mut steps_iter = StepsIterator::new(&bot_a, &bot_b, &round_params);
         assert_eq!(steps_iter.next().unwrap(), RoundResult::round_ongoing());
         assert_eq!(steps_iter.next().unwrap(), RoundResult::draw());
+    }
+
+    #[test]
+    fn iter_maxStepsIsZeroButStartFlagZero_returnsDrawAtFirstStep() {
+        let round_params = make_round_params(0);
+        let bot_a = make_bot_idle_three_turns();
+        let bot_b = make_bot_idle_three_turns();
+        let mut steps_iter = StepsIterator::new(&bot_a, &bot_b, &round_params);
+        steps_iter.arena.tape[0] = 0;
+        assert_eq!(steps_iter.next().unwrap(), RoundResult::draw());
+    }
+
+    #[test]
+    fn iter_maxStepsIsOneButStartFlagZero_returnsEndBotWinsAtFirstStep() {
+        let round_params = make_round_params(1);
+        let bot_a = make_bot_idle_three_turns();
+        let bot_b = make_bot_idle_three_turns();
+        let mut steps_iter = StepsIterator::new(&bot_a, &bot_b, &round_params);
+        steps_iter.arena.tape[0] = 0;
+        assert_eq!(steps_iter.next().unwrap(), RoundResult::end_bot_wins());
     }
 
     #[test]

@@ -65,13 +65,13 @@ impl<'a> BotInPlay<'a> {
                 Some(Mutation::new(self.pos as usize,
                                    self.polarity.mutation_relative_to_tape(-1)))
             }
-            Instruction::ConditionalGoToForward { target_pointer } => {
+            Instruction::WhileNotZeroOpen { target_pointer } => {
                 if current_cell_is_zero {
                     self.code_pointer = target_pointer;
                 }
                 None
             }
-            Instruction::ConditionalGoToBack { target_pointer } => {
+            Instruction::WhileNotZeroClose { target_pointer } => {
                 if !current_cell_is_zero {
                     self.code_pointer = target_pointer;
                 }
