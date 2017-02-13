@@ -1,7 +1,7 @@
 use bf_bot_core::bf::Instruction;
 
 //TODO: Take &str?
-pub fn parse_bot<'a>(source_code: String) -> Vec<Instruction> {
+pub fn parse_bot(source_code: String) -> Vec<Instruction> {
     let (bracket_stack, instructions): (Vec<usize>, Vec<Instruction>) = source_code.chars()
         .enumerate()
         .fold((vec![], vec![]),
