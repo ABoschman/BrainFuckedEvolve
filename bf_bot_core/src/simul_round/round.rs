@@ -43,7 +43,9 @@ mod tests {
     /// Constructs a Bot that waits three turns and then terminates its program.
     /// Its program, in BrainFuck: ...
     fn make_bot_idle_three_turns() -> Bot {
-        Bot::new(vec![Instruction::DoNothing, Instruction::DoNothing, Instruction::DoNothing])
+        Bot::new(vec![Instruction::SkipExecution,
+                      Instruction::SkipExecution,
+                      Instruction::SkipExecution])
     }
 
     /// Constructs a suicidal Bot that moves one step away from the other bot, off the tape.

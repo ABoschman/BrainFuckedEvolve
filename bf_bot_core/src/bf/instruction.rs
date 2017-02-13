@@ -6,7 +6,7 @@ pub enum Instruction {
     Decrement,
     StartWhileNotZero { target_pointer: usize },
     EndWhileNotZero { target_pointer: usize },
-    DoNothing,
+    SkipExecution,
     StartFor { target_pointer: usize },
     EndFor {
         target_pointer: usize,

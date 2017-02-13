@@ -1,55 +1,76 @@
 use bf_bot_core::bf::Instruction;
 
-pub fn parse_bot(code: String) -> Vec<Instruction> {
-    let mut bracket_stack: Vec<usize> = Vec::new();
-    let mut vec: Vec<Instruction> = Vec::new();
-    for character in code.chars() {
-        //todo: change into scan with stack as mutable state?
+//TODO: Take &str?
+pub fn parse_bot<'a>(source_code: String) -> Vec<Instruction> {
+    let (bracket_stack, instructions): (Vec<usize>, Vec<Instruction>) = source_code.chars()
+        .enumerate()
+        .fold((vec![], vec![]),
+              |(mut bracket_stack, mut instructions), (index, character)| {
+            match character {
+                '<' => instructions.push(Instruction::MoveBack),
+                '>' => instructions.push(Instruction::MoveForward),
+                '+' => instructions.push(Instruction::Increment),
+                '-' => instructions.push(Instruction::Decrement),
+                '.' => instructions.push(Instruction::SkipExecution),
+                '[' => open_square_bracket(&mut bracket_stack, &mut instructions),
+                ']' => close_square_bracket(&mut bracket_stack, &mut instructions),
+                '(' => open_round_bracket(&mut bracket_stack, &mut instructions),
+                ')' => close_round_bracket(&mut bracket_stack, &mut instructions),
+                _ => {
+                    //Comment character, ignore.
+                }
+            };
+            (bracket_stack, instructions)
+        });
+    assert!(bracket_stack.is_empty(), "Unmatched opening bracket(s).");
+    instructions
+}
 
-        let instruction: Instruction = match character {
-            '<' => Instruction::MoveBack,
-            '>' => Instruction::MoveForward,
-            '+' => Instruction::Increment,
-            '-' => Instruction::Decrement,
-            '[' => {
-                bracket_stack.push(vec.len());
-                start_while_not_zero_placeholder()
-            }
-            ']' => {
-                let opening_index: Option<usize> = bracket_stack.pop();
-                match opening_index {
-                    Some(value) => {
-                        assert_eq!(vec[value], start_while_not_zero_placeholder());
-                        vec[value] = Instruction::StartWhileNotZero { target_pointer: vec.len() };
-                        Instruction::EndWhileNotZero { target_pointer: value }
-                    }
-                    None => panic!("Unmatched square closing bracket."),
-                }
-            }
-            '(' => Instruction::StartFor { target_pointer: 0 },
-            ')' => {
-                Instruction::EndFor {
-                    target_pointer: 0,
-                    nr_iterations: 1,
-                }
-            }
-            '.' => Instruction::DoNothing,
-            _ => Instruction::Comment,
-        };
-        if instruction != Instruction::Comment {
-            vec.push(instruction);
+fn open_square_bracket(bracket_stack: &mut Vec<usize>, instructions: &mut Vec<Instruction>) {
+    bracket_stack.push(instructions.len());
+    instructions.push(start_while_not_zero_placeholder());
+}
+
+fn close_square_bracket(bracket_stack: &mut Vec<usize>, instructions: &mut Vec<Instruction>) {
+    let opening_index: Option<usize> = bracket_stack.pop();
+    match opening_index {
+        Some(value) => {
+            assert_eq!(instructions[value], start_while_not_zero_placeholder());
+            instructions[value] =
+                Instruction::StartWhileNotZero { target_pointer: instructions.len() };
+            instructions.push(Instruction::EndWhileNotZero { target_pointer: value });
         }
+        None => panic!("Unmatched square closing bracket."),
     }
-    if !bracket_stack.is_empty() {
-        panic!("Unmatched square opening bracket.");
+}
+
+fn open_round_bracket(bracket_stack: &mut Vec<usize>, instructions: &mut Vec<Instruction>) {
+    bracket_stack.push(instructions.len());
+    instructions.push(start_for_placeholder());
+}
+
+fn close_round_bracket(bracket_stack: &mut Vec<usize>, instructions: &mut Vec<Instruction>) {
+    let opening_index: Option<usize> = bracket_stack.pop();
+    match opening_index {
+        Some(value) => {
+            assert_eq!(instructions[value], start_for_placeholder());
+            instructions[value] = Instruction::StartFor { target_pointer: instructions.len() };
+            instructions.push(Instruction::EndFor {
+                target_pointer: value,
+                nr_iterations: 1,
+            });
+        }
+        None => panic!("Unmatched square closing bracket."),
     }
-    vec
 }
 
 fn start_while_not_zero_placeholder() -> Instruction {
-    Instruction::StartWhileNotZero { target_pointer: usize::max_value() }
+    Instruction::StartWhileNotZero { target_pointer: <usize>::max_value() }
 }
 
+fn start_for_placeholder() -> Instruction {
+    Instruction::StartFor { target_pointer: <usize>::max_value() }
+}
 
 #[cfg(test)]
 #[allow(non_snake_case)]
@@ -65,9 +86,9 @@ mod tests {
     }
 
     #[test]
-    fn parseBot_dot_shouldReturnDoNothing() {
+    fn parseBot_dot_shouldReturnSkipExecution() {
         let input: String = ".".to_string();
-        let expected: Vec<Instruction> = vec![Instruction::DoNothing];
+        let expected: Vec<Instruction> = vec![Instruction::SkipExecution];
         assert_eq!(&expected, &parse_bot(input));
     }
 
@@ -163,6 +184,57 @@ mod tests {
     fn parseBot_unmatchedNestedSquareClosingBracket_shouldPanic() {
         let input: String = "[]]".to_string();
         parse_bot(input);
+    }
+
+    #[test]
+    #[should_panic]
+    fn parseBot_unmatchedRoundOpeningBracket_shouldPanic() {
+        let input: String = "(".to_string();
+        parse_bot(input);
+    }
+
+    #[test]
+    #[should_panic]
+    fn parseBot_unmatchedRoundClosingBracket_shouldPanic() {
+        let input: String = ")".to_string();
+        parse_bot(input);
+    }
+
+    #[test]
+    #[should_panic]
+    fn parseBot_wrongTypeOfBracketRoundSquare_shouldPanic() {
+        let input: String = "(]".to_string();
+        parse_bot(input);
+    }
+
+    #[test]
+    #[should_panic]
+    fn parseBot_wrongTypeOfBracketSquareRound_shouldPanic() {
+        let input: String = "[)".to_string();
+        parse_bot(input);
+    }
+
+    #[test]
+    fn parseBot_roundBrackets_returnsForLoop() {
+        let input: String = "()*1".to_string();
+        let expected: Vec<Instruction> = vec![Instruction::StartFor { target_pointer: 1 },
+                                              Instruction::EndFor {
+                                                  target_pointer: 0,
+                                                  nr_iterations: 1,
+                                              }];
+        assert_eq!(&expected, &parse_bot(input));
+    }
+
+    #[test]
+    #[ignore]
+    fn parseBot_roundBracketsDifferentNumberIterations_returnsForLoop() {
+        let input: String = "()*2".to_string();
+        let expected: Vec<Instruction> = vec![Instruction::StartFor { target_pointer: 1 },
+                                              Instruction::EndFor {
+                                                  target_pointer: 0,
+                                                  nr_iterations: 2,
+                                              }];
+        assert_eq!(&expected, &parse_bot(input));
     }
 
 }
