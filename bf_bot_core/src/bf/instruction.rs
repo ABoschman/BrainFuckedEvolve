@@ -12,5 +12,4 @@ pub enum Instruction {
         target_pointer: usize,
         nr_iterations: usize,
     },
-    Comment,
 }

@@ -12,10 +12,16 @@ pub fn parse_bot<'a>(source_code: String) -> Vec<Instruction> {
                 '+' => instructions.push(Instruction::Increment),
                 '-' => instructions.push(Instruction::Decrement),
                 '.' => instructions.push(Instruction::SkipExecution),
-                '[' => open_square_bracket(&mut bracket_stack, &mut instructions),
+                '[' => {
+                    open_bracket(&mut bracket_stack,
+                                 &mut instructions,
+                                 start_while_not_zero_placeholder)
+                }
                 ']' => close_square_bracket(&mut bracket_stack, &mut instructions),
-                '(' => open_round_bracket(&mut bracket_stack, &mut instructions),
-                ')' => close_round_bracket(&mut bracket_stack, &mut instructions),
+                '(' => open_bracket(&mut bracket_stack, &mut instructions, start_for_placeholder),
+                ')' => {
+                    close_round_bracket(&mut bracket_stack, &mut instructions, &source_code, index)
+                }
                 _ => {
                     //Comment character, ignore.
                 }
@@ -26,9 +32,11 @@ pub fn parse_bot<'a>(source_code: String) -> Vec<Instruction> {
     instructions
 }
 
-fn open_square_bracket(bracket_stack: &mut Vec<usize>, instructions: &mut Vec<Instruction>) {
+fn open_bracket(bracket_stack: &mut Vec<usize>,
+                instructions: &mut Vec<Instruction>,
+                make_instruction: fn() -> Instruction) {
     bracket_stack.push(instructions.len());
-    instructions.push(start_while_not_zero_placeholder());
+    instructions.push(make_instruction());
 }
 
 fn close_square_bracket(bracket_stack: &mut Vec<usize>, instructions: &mut Vec<Instruction>) {
@@ -44,12 +52,11 @@ fn close_square_bracket(bracket_stack: &mut Vec<usize>, instructions: &mut Vec<I
     }
 }
 
-fn open_round_bracket(bracket_stack: &mut Vec<usize>, instructions: &mut Vec<Instruction>) {
-    bracket_stack.push(instructions.len());
-    instructions.push(start_for_placeholder());
-}
-
-fn close_round_bracket(bracket_stack: &mut Vec<usize>, instructions: &mut Vec<Instruction>) {
+//TODO: Give only the remaining part of the string slice, to cut performance down to O(N).
+fn close_round_bracket(bracket_stack: &mut Vec<usize>,
+                       instructions: &mut Vec<Instruction>,
+                       source_code: &str,
+                       index: usize) {
     let opening_index: Option<usize> = bracket_stack.pop();
     match opening_index {
         Some(value) => {
@@ -57,11 +64,23 @@ fn close_round_bracket(bracket_stack: &mut Vec<usize>, instructions: &mut Vec<In
             instructions[value] = Instruction::StartFor { target_pointer: instructions.len() };
             instructions.push(Instruction::EndFor {
                 target_pointer: value,
-                nr_iterations: 1,
+                nr_iterations: get_nr_iterations(source_code, index),
             });
         }
         None => panic!("Unmatched square closing bracket."),
     }
+}
+
+fn get_nr_iterations(source_code: &str, index: usize) -> usize {
+    let mut chars = source_code.chars().skip(index + 1);
+    assert_eq!(chars.next(),
+               Some('*'),
+               "Error. ')' must be followed by an asterisk.");
+    chars.take_while(|character| character.is_digit(10))
+        .collect::<String>()
+        .parse::<usize>()
+        .expect("Error. A for loop '(...)*' should be followed by a number that signifies its \
+                 number of iterations.")
 }
 
 fn start_while_not_zero_placeholder() -> Instruction {
@@ -215,6 +234,13 @@ mod tests {
     }
 
     #[test]
+    #[should_panic]
+    fn parseBot_roundClosingBraceNotFollowedByAsterisk_shouldPanic() {
+        let input: String = "()10".to_string();
+        parse_bot(input);
+    }
+
+    #[test]
     fn parseBot_roundBrackets_returnsForLoop() {
         let input: String = "()*1".to_string();
         let expected: Vec<Instruction> = vec![Instruction::StartFor { target_pointer: 1 },
@@ -226,13 +252,23 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn parseBot_roundBracketsDifferentNumberIterations_returnsForLoop() {
         let input: String = "()*2".to_string();
         let expected: Vec<Instruction> = vec![Instruction::StartFor { target_pointer: 1 },
                                               Instruction::EndFor {
                                                   target_pointer: 0,
                                                   nr_iterations: 2,
+                                              }];
+        assert_eq!(&expected, &parse_bot(input));
+    }
+
+    #[test]
+    fn parseBot_roundBracketsNrIterationsDoubleDigits_returnsForLoop() {
+        let input: String = "()*10".to_string();
+        let expected: Vec<Instruction> = vec![Instruction::StartFor { target_pointer: 1 },
+                                              Instruction::EndFor {
+                                                  target_pointer: 0,
+                                                  nr_iterations: 10,
                                               }];
         assert_eq!(&expected, &parse_bot(input));
     }
