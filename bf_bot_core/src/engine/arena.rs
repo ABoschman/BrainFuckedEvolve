@@ -54,18 +54,11 @@ impl<'a> Arena<'a> {
         self.generate_result(flag_a_previously_zeroed, flag_b_previously_zeroed)
     }
 
-    //FIXME: Code duplication.
     fn execute_instructions(&mut self) {
         let optional_cell_mutation_1 = Arena::step_bot(&mut self.start_bot, &self.tape);
         let optional_cell_mutation_2 = Arena::step_bot(&mut self.end_bot, &self.tape);
-        if let Some(mutation) = optional_cell_mutation_1 {
-            self.tape[mutation.get_index()] = self.tape[mutation.get_index()]
-                .wrapping_add(mutation.get_addend());
-        }
-        if let Some(mutation) = optional_cell_mutation_2 {
-            self.tape[mutation.get_index()] = self.tape[mutation.get_index()]
-                .wrapping_add(mutation.get_addend());
-        }
+        self.apply_mutation(optional_cell_mutation_1);
+        self.apply_mutation(optional_cell_mutation_2);
         self.step_nr += 1;
     }
 
@@ -74,10 +67,19 @@ impl<'a> Arena<'a> {
         if bot_in_play.program_has_ended() {
             return None;
         }
-        let current_cell_is_zero = tape[bot_in_play.get_pos()] == 0;
-        let option = bot_in_play.execute_code(current_cell_is_zero);
-        bot_in_play.increment_code_pointer();
-        option
+        let cell_is_zero = Arena::cell_is_zero(tape, bot_in_play.get_pos());
+        bot_in_play.execute_code(cell_is_zero)
+    }
+
+    fn cell_is_zero(tape: &[i8], index: usize) -> bool {
+        tape[index] == 0
+    }
+
+    fn apply_mutation(&mut self, optional_cell_mutation: Option<Mutation>) {
+        if let Some(mutation) = optional_cell_mutation {
+            self.tape[mutation.get_index()] = self.tape[mutation.get_index()]
+                .wrapping_add(mutation.get_addend());
+        }
     }
 
     fn generate_result(&self,

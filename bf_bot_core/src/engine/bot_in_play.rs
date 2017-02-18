@@ -20,6 +20,8 @@ pub struct BotInPlay<'a> {
     orientation: Orientation,
     /// The polarity of the bot during this game.
     polarity: Polarity,
+    /// Stack of iteration numbers.
+    iter_stack: Vec<usize>,
 }
 
 impl<'a> BotInPlay<'a> {
@@ -34,6 +36,7 @@ impl<'a> BotInPlay<'a> {
             code_pointer: 0,
             orientation: orientation,
             polarity: polarity,
+            iter_stack: vec![],
         }
     }
 
@@ -48,7 +51,11 @@ impl<'a> BotInPlay<'a> {
     }
 
     pub fn execute_code(&mut self, current_cell_is_zero: bool) -> Option<Mutation> {
-        match self.bot.get_program()[self.code_pointer] {
+        self.handle_for_loop();
+        if self.program_has_ended() {
+            return None;
+        } //TODO: CoverWithTest
+        let result = match self.bot.get_program()[self.code_pointer] {
             Instruction::MoveBack => {
                 self.pos += self.orientation.calc_movement_relative_to_tape(-1);
                 None
@@ -78,6 +85,35 @@ impl<'a> BotInPlay<'a> {
                 None
             }
             _ => None,
+        };
+        self.increment_code_pointer();
+        result
+    }
+
+    fn handle_for_loop(&mut self) {
+        loop {
+            if self.program_has_ended() {
+                break;
+            } //TODO: CoverWithTest
+            match self.bot.get_program()[self.code_pointer] {
+                Instruction::StartFor { target_pointer } => {
+                    self.iter_stack.push(0);
+                    self.code_pointer = self.code_pointer + 1;
+                }
+                Instruction::EndFor { target_pointer, nr_iterations } => {
+                    let count = self.iter_stack.pop().unwrap() + 1;
+                    if count >= nr_iterations {
+                        self.code_pointer = self.code_pointer + 1;
+                    } else {
+                        self.iter_stack.push(count); //TODO: CoverWithTest. bug used to be that
+                        //this was before the if. Or not at all.
+                        self.code_pointer = target_pointer + 1;
+                    }
+                }
+                _ => {
+                    break;
+                }
+            }
         }
     }
 

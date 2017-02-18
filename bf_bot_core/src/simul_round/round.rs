@@ -54,6 +54,19 @@ mod tests {
         Bot::new(vec![Instruction::MoveBack])
     }
 
+    /// Constructs a suicidal Bot that moves one step towards the other bot, then two steps away,
+    /// off the tape.
+    /// Its program, in BrainFuck: >(<)*2
+    fn make_suicidal_looping_bot() -> Bot {
+        Bot::new(vec![Instruction::MoveForward,
+                      Instruction::StartFor { target_pointer: 3 },
+                      Instruction::MoveBack,
+                      Instruction::EndFor {
+                          target_pointer: 1,
+                          nr_iterations: 2,
+                      }])
+    }
+
     fn make_round_params(max_steps: u32) -> RoundParams {
         RoundParams {
             tape_length: 10,
@@ -175,5 +188,22 @@ mod tests {
         assert_eq!(steps_iter.next().unwrap(),
                    RoundResult::draw(),
                    "Expected draw!");
+    }
+
+    #[test]
+    fn iter_suicidalForLoop_botLosesAfterThreeSteps() {
+        let round_params = make_round_params(100_000);
+        let bot_a = make_suicidal_looping_bot();
+        let bot_b = make_empty_bot();
+        let mut steps_iter = StepsIterator::new(&bot_a, &bot_b, &round_params);
+        assert_eq!(steps_iter.next().unwrap(),
+                   RoundResult::round_ongoing(),
+                   "Expected round_ongoing!");
+        assert_eq!(steps_iter.next().unwrap(),
+                   RoundResult::round_ongoing(),
+                   "Expected round_ongoing!");
+        assert_eq!(steps_iter.next().unwrap(),
+                   RoundResult::end_bot_wins(),
+                   "Expected end_bot_wins!");
     }
 }

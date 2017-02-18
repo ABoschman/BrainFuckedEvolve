@@ -14,6 +14,7 @@ pub fn run<I>(bot_a: &Bot, bot_b: &Bot, rounds: I) -> GameResult
 {
     rounds.fold(GameResult::new(), |mut game_result, round_params| {
         let round_result = simul_round::play(bot_a, bot_b, &round_params);
+        println!("{:?}", round_result);
         game_result.add_result_to_total(&round_result);
         game_result
     })

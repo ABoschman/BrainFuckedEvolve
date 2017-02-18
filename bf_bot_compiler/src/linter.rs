@@ -136,3 +136,10 @@ fn checkUnintendedDot_forDotSurroundedByComments_raisesWarning() {
                                     })];
     assert_eq!(&expected, &check_unintended_dot(input));
 }
+
+
+//TODO:
+//Issues:
+//1: '(<just comments>)' unnecessary loop.
+//2: Compiler errors? () without *<number>
+//3: Dead code: loop with zero iterations: ()*0
