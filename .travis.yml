@@ -2,8 +2,8 @@
 # nightly versions, so select a nightly/clippy combination known to work.
 env:
   global:
-    - CLIPPY_VERSION=0.0.113
-    - NIGHTLY_VERSION=nightly-2017-02-03
+    - CLIPPY_VERSION=0.0.172
+    - NIGHTLY_VERSION=nightly-2017-11-16
     
 branches:
     only:
@@ -16,7 +16,7 @@ rust:
     - stable
     - beta
     - nightly
-    - nightly-2017-02-03
+    - nightly-2017-11-16
 
 cache: cargo
     
